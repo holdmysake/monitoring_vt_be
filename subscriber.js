@@ -34,6 +34,8 @@ client.on("message", async (topic, message) => {
 
         await recordMQTT(data)
 
+        console.log("MQTT Message Received:", message.toString())
+
     } catch (err) {
         console.error("MQTT Message Error:", err)
     }
