@@ -1,0 +1,38 @@
+{
+  "name": "monitoring_vt",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@pdf-lib/fontkit": "^1.1.1",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "docxtemplater": "^3.67.6",
+    "docxtemplater-image-module-free": "^1.1.1",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "fs": "^0.0.1-security",
+    "jsonwebtoken": "^9.0.3",
+    "libreoffice-convert": "^1.7.0",
+    "moment-timezone": "^0.6.0",
+    "mqtt": "^5.14.1",
+    "multer": "^2.0.2",
+    "mysql2": "^3.15.3",
+    "nodemon": "^3.1.11",
+    "path": "^0.12.7",
+    "pdf-lib": "^1.17.1",
+    "pizzip": "^3.2.0",
+    "qrcode": "^1.5.4",
+    "qrcode-terminal": "^0.12.0",
+    "sequelize": "^6.37.7",
+    "url": "^0.11.4"
+  }
+}
