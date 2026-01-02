@@ -20,6 +20,7 @@ import { fileURLToPath } from "url"
 import ImageModule from "docxtemplater-image-module-free"
 import { PDFDocument, rgb } from "pdf-lib"
 import fontkit from "@pdf-lib/fontkit"
+import { verifyToken } from "../middlewares/user.middleware.js"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -67,75 +68,75 @@ const fields = {
     qr:           { x: 90, y: 105 }
 }
 
-router.post("/create-pdf-test", async (req, res) => {
-    try {
-        const { 
-            rute_id, supervisor_id, dispatcher_id, date, vt_id,
-            driver1, driver2, helper1, helper2,
-            bbm, time_out, time_back
-        } = req.body
+// router.post("/create-pdf-test", async (req, res) => {
+//     try {
+//         const { 
+//             rute_id, supervisor_id, dispatcher_id, date, vt_id,
+//             driver1, driver2, helper1, helper2,
+//             bbm, time_out, time_back
+//         } = req.body
 
-        if (!no_sj) {
-            return res.status(400).json({ message: "no_sj dibutuhkan" })
-        }
+//         if (!no_sj) {
+//             return res.status(400).json({ message: "no_sj dibutuhkan" })
+//         }
 
-        const templatePath = path.join(__dirname, "../data/template_sj1.pdf")
-        const pdfBytes = fs.readFileSync(templatePath)
-        const pdfDoc = await PDFDocument.load(pdfBytes)
+//         const templatePath = path.join(__dirname, "../data/template_sj1.pdf")
+//         const pdfBytes = fs.readFileSync(templatePath)
+//         const pdfDoc = await PDFDocument.load(pdfBytes)
 
-        pdfDoc.registerFontkit(fontkit)
+//         pdfDoc.registerFontkit(fontkit)
 
-        const page = pdfDoc.getPages()[0]
+//         const page = pdfDoc.getPages()[0]
 
-        const calibriBytes = fs.readFileSync(
-            path.join(__dirname, "../fonts/calibri-regular.ttf")
-        )
-        const font = await pdfDoc.embedFont(calibriBytes)
+//         const calibriBytes = fs.readFileSync(
+//             path.join(__dirname, "../fonts/calibri-regular.ttf")
+//         )
+//         const font = await pdfDoc.embedFont(calibriBytes)
 
-        drawTextAuto(page, font, no_sj, fields.no_sj)
-        drawTextAuto(page, font, "20-12-2025", fields.date)
-        drawTextAuto(page, font, "RUTE A", fields.rute)
+//         drawTextAuto(page, font, no_sj, fields.no_sj)
+//         drawTextAuto(page, font, "20-12-2025", fields.date)
+//         drawTextAuto(page, font, "RUTE A", fields.rute)
 
-        drawTextAuto(page, font, "Driver 1", fields.driver1_ttd)
-        drawTextAuto(page, font, "Driver 2", fields.driver2_ttd)
-        drawTextAuto(page, font, "Dispatcher", fields.dispatcher)
+//         drawTextAuto(page, font, "Driver 1", fields.driver1_ttd)
+//         drawTextAuto(page, font, "Driver 2", fields.driver2_ttd)
+//         drawTextAuto(page, font, "Dispatcher", fields.dispatcher)
 
-        const qrPayload = { no_sj }
-        const qrDataUrl = await QRCode.toDataURL(JSON.stringify(qrPayload))
+//         const qrPayload = { no_sj }
+//         const qrDataUrl = await QRCode.toDataURL(JSON.stringify(qrPayload))
 
-        const qrBase64 = qrDataUrl.replace(/^data:image\/pngbase64,/, "")
-        const qrBytes = Buffer.from(qrBase64, "base64")
+//         const qrBase64 = qrDataUrl.replace(/^data:image\/pngbase64,/, "")
+//         const qrBytes = Buffer.from(qrBase64, "base64")
 
-        const qrImage = await pdfDoc.embedPng(qrBytes)
+//         const qrImage = await pdfDoc.embedPng(qrBytes)
 
-        page.drawImage(qrImage, {
-            x: fields.qr.x,
-            y: fields.qr.y,
-            width: 120,
-            height: 120
-        })
+//         page.drawImage(qrImage, {
+//             x: fields.qr.x,
+//             y: fields.qr.y,
+//             width: 120,
+//             height: 120
+//         })
 
-        const out = await pdfDoc.save()
+//         const out = await pdfDoc.save()
 
-        const outputDir = path.join(__dirname, "../uploads/sj")
-        if (!fs.existsSync(outputDir)) {
-            fs.mkdirSync(outputDir, { recursive: true })
-        }
+//         const outputDir = path.join(__dirname, "../uploads/sj")
+//         if (!fs.existsSync(outputDir)) {
+//             fs.mkdirSync(outputDir, { recursive: true })
+//         }
 
-        const filePath = path.join(outputDir, `TEST_${no_sj}.pdf`)
-        fs.writeFileSync(filePath, out)
+//         const filePath = path.join(outputDir, `TEST_${no_sj}.pdf`)
+//         fs.writeFileSync(filePath, out)
 
-        res.json({
-            message: "PDF test dibuat",
-            file: filePath
-        })
-    } catch (e) {
-        console.error(e)
-        res.status(500).json({ message: e.message })
-    }
-})
+//         res.json({
+//             message: "PDF test dibuat",
+//             file: filePath
+//         })
+//     } catch (e) {
+//         console.error(e)
+//         res.status(500).json({ message: e.message })
+//     }
+// })
 
-router.post("/create", async (req, res) => {
+router.post("/create", verifyToken, async (req, res) => {
     try {
         const { 
             rute_id, supervisor_id, dispatcher_id, date, vt_id,
@@ -600,7 +601,7 @@ const getSuratJalanAll = async (where) => {
     })
 }
 
-router.post("/get", async (req, res) => {
+router.post("/get", verifyToken, async (req, res) => {
     try {
         const { surat_jalan_id } = req.body
 
@@ -616,7 +617,7 @@ router.post("/get", async (req, res) => {
     }
 })
 
-router.post("/getSJByDates", async (req, res) => {
+router.post("/getSJByDates", verifyToken, async (req, res) => {
     try {
         const { dates = [] } = req.body
 
@@ -648,7 +649,7 @@ router.post("/getSJByDates", async (req, res) => {
     }
 })
 
-router.post("/trip", async (req, res) => {
+router.post("/trip", verifyToken, async (req, res) => {
     const t = await sequelize.transaction()
 
     try {

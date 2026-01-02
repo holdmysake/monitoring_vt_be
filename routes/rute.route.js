@@ -1,10 +1,10 @@
 import express from "express"
 import Rute from "../models/rute.model.js"
-import User from "../models/user.model.js"
+import { verifyToken } from "../middlewares/user.middleware.js"
 
 const router = express.Router()
 
-router.post("/create", async (req, res) => {
+router.post("/create", verifyToken, async (req, res) => {
     try {
         const { nama, jarak, user_id } = req.body
 
@@ -25,7 +25,7 @@ router.post("/create", async (req, res) => {
     }
 })
 
-router.post("/get", async (req, res) => {
+router.post("/get", verifyToken, async (req, res) => {
     try {
         const rutes = await Rute.findAll()
 

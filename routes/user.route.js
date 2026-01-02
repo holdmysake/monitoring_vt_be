@@ -3,12 +3,13 @@ import User from "../models/user.model.js"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import { Op } from "sequelize"
+import { verifyToken } from "../middlewares/user.middleware.js"
 
 const JWT_SECRET = process.env.JWT_SECRET
 
 const router = express.Router()
 
-router.post("/login", async (req, res) => {
+router.post("/login", verifyToken, async (req, res) => {
     try {
         const { email, password } = req.body
 
@@ -61,7 +62,7 @@ router.post("/login", async (req, res) => {
     }
 })
 
-router.post("/create", async(req, res) => {
+router.post("/create", verifyToken, async(req, res) => {
     try {
         const { username, nama, email, password, no_hp, role, jabatan } = req.body
 
@@ -92,7 +93,7 @@ router.post("/create", async(req, res) => {
     }
 })
 
-router.post("/getUser", async (req, res) => {
+router.post("/getUser", verifyToken, async (req, res) => {
     try {
         const users = await User.findAll({
             where: {

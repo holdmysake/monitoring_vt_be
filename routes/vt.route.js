@@ -1,9 +1,10 @@
 import express from "express"
 import VT from "../models/vt.model.js"
+import { verifyToken } from "../middlewares/user.middleware.js"
 
 const router = express.Router()
 
-router.post("/create", async (req, res) => {
+router.post("/create", verifyToken, async (req, res) => {
     try {
         const { plat, no_vt, kapasitas } = req.body
 
@@ -24,7 +25,7 @@ router.post("/create", async (req, res) => {
     }
 })
 
-router.post("/get", async (req, res) => {
+router.post("/get", verifyToken, async (req, res) => {
     try {
         const vts = await VT.findAll()
 
