@@ -41,6 +41,11 @@ const Record = sequelize.define('record', {
     sat: {
         type: DataTypes.INTEGER,
         allowNull: true
+    },
+
+    timestamp: {
+        type: DataTypes.DATE,
+        allowNull: true
     }
 }, {
     tableName: 'record',
