@@ -111,4 +111,42 @@ router.post("/getUser", verifyToken, async (req, res) => {
     }
 })
 
+router.post("/getDispatcher", verifyToken, async (req, res) => {
+    try {
+        const users = await User.findAll({
+            where: {
+                role: 'user',
+                jabatan: 'dispatcher'
+            }
+        })
+
+        res.json({
+            message: "Berhasil mengambil data user",
+            users
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: error.message })
+    }
+})
+
+router.post("/getSupervisor", verifyToken, async (req, res) => {
+    try {
+        const users = await User.findAll({
+            where: {
+                role: 'user',
+                jabatan: 'supervisor'
+            }
+        })
+
+        res.json({
+            message: "Berhasil mengambil data user",
+            users
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: error.message })
+    }
+})
+
 export default router
