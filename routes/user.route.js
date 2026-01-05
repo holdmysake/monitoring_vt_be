@@ -9,7 +9,7 @@ const JWT_SECRET = process.env.JWT_SECRET
 
 const router = express.Router()
 
-router.post("/login", verifyToken, async (req, res) => {
+router.post("/login", async (req, res) => {
     try {
         const { email, password } = req.body
 
