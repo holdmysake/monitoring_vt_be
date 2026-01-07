@@ -267,7 +267,19 @@ router.post("/getDriverByID", verifyToken, async (req, res) => {
             where: {
                 personel_id,
                 is_driver: 1
-            }
+            },
+            include: [
+                {
+                    model: Personel,
+                    as: 'helper',
+                    attributes: ['personel_id', 'nama_personel',]
+                },
+                {
+                    model: VT,
+                    as: 'vt',
+                    attributes: ['vt_id', 'plat', 'no_vt']
+                }
+            ]
         })
 
         if (!driver) {
@@ -290,6 +302,18 @@ router.post("/getLastDriver", verifyToken, async (req, res) => {
             where: {
                 is_driver: 1
             },
+            include: [
+                {
+                    model: Personel,
+                    as: 'helper',
+                    attributes: ['personel_id', 'nama_personel',]
+                },
+                {
+                    model: VT,
+                    as: 'vt',
+                    attributes: ['vt_id', 'plat', 'no_vt']
+                }
+            ],
             order: [['id', 'DESC']]
         })
 
@@ -309,6 +333,18 @@ router.post("/getDriverSJ", verifyToken, async (req, res) => {
             where: {
                 is_driver: 1
             },
+            include: [
+                {
+                    model: Personel,
+                    as: 'helper',
+                    attributes: ['personel_id', 'nama_personel',]
+                },
+                {
+                    model: VT,
+                    as: 'vt',
+                    attributes: ['vt_id', 'plat', 'no_vt']
+                }
+            ],
             attributes: ['personel_id', 'nama_personel', 'foto', 'sim_expired_at', 'siml_expired_at']
         })
 
