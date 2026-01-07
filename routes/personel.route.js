@@ -138,22 +138,22 @@ router.post(
 
             const personel = await Personel.findOne({ where: { personel_id } })
 
-            if (req.body.foto === null && personel.foto) {
+            if (req.body.foto === null || !req.body.ktp && personel.foto) {
                 deleteFileIfExists(personel.foto)
                 personel.foto = null
             }
             
-            if (req.body.ktp === null && personel.ktp) {
+            if ((req.body.ktp === null || !req.body.ktp) && personel.ktp) {
                 deleteFileIfExists(personel.ktp)
                 personel.ktp = null
             }
             
-            if (req.body.sim === null && personel.sim) {
+            if (req.body.sim === null || !req.body.ktp && personel.sim) {
                 deleteFileIfExists(personel.sim)
                 personel.sim = null
             }
             
-            if (req.body.siml === null && personel.siml) {
+            if (req.body.siml === null || !req.body.ktp && personel.siml) {
                 deleteFileIfExists(personel.siml)
                 personel.siml = null
             }
