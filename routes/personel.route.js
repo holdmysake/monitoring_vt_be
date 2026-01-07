@@ -138,6 +138,26 @@ router.post(
 
             const personel = await Personel.findOne({ where: { personel_id } })
 
+            if (req.body.foto === null && personel.foto) {
+                deleteFileIfExists(personel.foto)
+                personel.foto = null
+            }
+            
+            if (req.body.ktp === null && personel.ktp) {
+                deleteFileIfExists(personel.ktp)
+                personel.ktp = null
+            }
+            
+            if (req.body.sim === null && personel.sim) {
+                deleteFileIfExists(personel.sim)
+                personel.sim = null
+            }
+            
+            if (req.body.siml === null && personel.siml) {
+                deleteFileIfExists(personel.siml)
+                personel.siml = null
+            }
+
             if (!personel) {
                 deleteUploadedFiles(req.files)
                 return res.status(404).json({ message: "Personel tidak ditemukan" })
