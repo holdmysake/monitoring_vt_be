@@ -75,7 +75,7 @@ router.post("/create",
         let def_helper_dump = def_helper
         let def_vt_dump = def_vt
 
-        if (is_driver) {
+        if (!is_driver) {
             def_helper_dump = null
             def_vt_dump = null
         }
@@ -131,7 +131,7 @@ router.post(
             let def_helper_dump = def_helper
             let def_vt_dump = def_vt
 
-            if (is_driver) {
+            if (!is_driver) {
                 def_helper_dump = null
                 def_vt_dump = null
             }
