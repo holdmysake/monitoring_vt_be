@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize"
 import sequelize from "../db.js"
+import VT from "./vt.model.js"
 
 const Personel = sequelize.define('personel', {
     id: {
@@ -57,6 +58,22 @@ const Personel = sequelize.define('personel', {
     is_driver: {
         type: DataTypes.BOOLEAN,
         allowNull: false
+    },
+
+    def_helper: {
+        type: DataTypes.STRING(10),
+        allowNull: true
+    },
+
+    def_vt: {
+        type: DataTypes.STRING(10),
+        allowNull: true,
+        references: {
+            model: VT,
+            as: 'vt'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
     }
 }, {
     tableName: 'personel',

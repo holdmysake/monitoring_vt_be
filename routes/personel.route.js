@@ -69,7 +69,12 @@ router.post("/create",
     ]),
     async (req, res) => {
     try {
-        const { nama_personel, no_hp, sim_expired_at, siml_expired_at, is_driver } = req.body
+        const { nama_personel, no_hp, sim_expired_at, siml_expired_at, is_driver, def_helper, def_vt } = req.body
+
+        if (is_driver) {
+            def_helper = null
+            def_vt = null
+        }
 
         const new_personel = await Personel.create({
             personel_id: `PSNL-${Math.random().toString(36).substring(2, 7).toUpperCase()}`,
@@ -81,7 +86,9 @@ router.post("/create",
             siml: req.files.siml?.[0]?.path || null,
             sim_expired_at,
             siml_expired_at,
-            is_driver
+            is_driver,
+            def_helper,
+            def_vt
         })
 
         res.json({
@@ -112,8 +119,15 @@ router.post(
                 no_hp,
                 sim_expired_at,
                 siml_expired_at,
-                is_driver
+                is_driver,
+                def_helper,
+                def_vt
             } = req.body
+
+            if (is_driver) {
+                def_helper = null
+                def_vt = null
+            }
 
             const personel = await Personel.findOne({ where: { personel_id } })
 
@@ -147,6 +161,8 @@ router.post(
             personel.sim_expired_at = sim_expired_at
             personel.siml_expired_at = siml_expired_at
             personel.is_driver = is_driver
+            personel.def_helper = def_helper
+            personel.def_vt = def_vt
 
             await personel.save()
 
