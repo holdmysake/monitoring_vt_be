@@ -88,6 +88,20 @@ const defineAssociation = models => {
         targetKey: 'user_id',
         as: 'user'
     })
+
+    models.Personel.belongsTo(models.Personel, {
+        foreignKey: 'def_helper',
+        targetKey: 'personel_id',
+        as: 'helper',
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
+    })
+
+    models.Personel.belongsTo(models.VT, {
+        foreignKey: 'def_vt',
+        targetKey: 'vt_id',
+        as: 'vt'
+    })
 }
 
 export default defineAssociation

@@ -4,6 +4,7 @@ import fs from "fs"
 import path from "path"
 import Personel from "../models/personel.model.js"
 import { verifyToken } from "../middlewares/user.middleware.js"
+import VT from "../models/vt.model.js"
 
 const router = express.Router()
 
@@ -71,9 +72,12 @@ router.post("/create",
     try {
         const { nama_personel, no_hp, sim_expired_at, siml_expired_at, is_driver, def_helper, def_vt } = req.body
 
+        let def_helper_dump = def_helper
+        let def_vt_dump = def_vt
+
         if (is_driver) {
-            def_helper = null
-            def_vt = null
+            def_helper_dump = null
+            def_vt_dump = null
         }
 
         const new_personel = await Personel.create({
@@ -87,8 +91,8 @@ router.post("/create",
             sim_expired_at,
             siml_expired_at,
             is_driver,
-            def_helper,
-            def_vt
+            def_helper: def_helper_dump,
+            def_vt: def_vt_dump
         })
 
         res.json({
@@ -124,9 +128,12 @@ router.post(
                 def_vt
             } = req.body
 
+            let def_helper_dump = def_helper
+            let def_vt_dump = def_vt
+
             if (is_driver) {
-                def_helper = null
-                def_vt = null
+                def_helper_dump = null
+                def_vt_dump = null
             }
 
             const personel = await Personel.findOne({ where: { personel_id } })
@@ -161,8 +168,8 @@ router.post(
             personel.sim_expired_at = sim_expired_at
             personel.siml_expired_at = siml_expired_at
             personel.is_driver = is_driver
-            personel.def_helper = def_helper
-            personel.def_vt = def_vt
+            personel.def_helper = def_helper_dump
+            personel.def_vt = def_vt_dump
 
             await personel.save()
 
@@ -207,7 +214,19 @@ router.post("/getDrivers", verifyToken, async (req, res) => {
         const drivers = await Personel.findAll({
             where: {
                 is_driver: 1
-            }
+            },
+            include: [
+                {
+                    model: Personel,
+                    as: 'helper',
+                    attributes: ['personel_id', 'nama_personel',]
+                },
+                {
+                    model: VT,
+                    as: 'vt',
+                    attributes: ['vt_id', 'plat', 'no_vt']
+                }
+            ]
         })
 
         res.json({
