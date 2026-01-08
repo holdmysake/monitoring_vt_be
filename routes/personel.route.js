@@ -141,7 +141,7 @@ router.post(
             // log req.body to json
             console.log("Request Body:", JSON.stringify(req.body, null, 2))
 
-            if (req.body.foto === null) {
+            if ((req.body.foto === null || req.body.foto === "null") && personel.foto) {
                 // deleteFileIfExists(personel.foto)
                 // personel.foto = null
                 return res.json({ message: "Foto to be deleted", body: req.body })
