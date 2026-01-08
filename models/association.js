@@ -102,6 +102,12 @@ const defineAssociation = models => {
         targetKey: 'vt_id',
         as: 'vt'
     })
+
+    models.VT.hasMany(models.Personel, {
+        foreignKey: 'def_vt',
+        sourceKey: 'vt_id',
+        as: 'personels'
+    })
 }
 
 export default defineAssociation

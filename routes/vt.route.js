@@ -1,6 +1,7 @@
 import express from "express"
 import VT from "../models/vt.model.js"
 import { verifyToken } from "../middlewares/user.middleware.js"
+import Personel from "../models/personel.model.js"
 
 const router = express.Router()
 
@@ -27,7 +28,15 @@ router.post("/create", verifyToken, async (req, res) => {
 
 router.post("/get", verifyToken, async (req, res) => {
     try {
-        const vts = await VT.findAll()
+        const vts = await VT.findAll({
+            include: [
+                {
+                    model: Personel,
+                    as: 'personels',
+                    attributes: ['personel_id', 'nama_personel']
+                }
+            ]
+        })
 
         res.json({
             message: "Berhasil mengambil data VT",
