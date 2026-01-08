@@ -60,6 +60,12 @@ function deleteFileIfExists(filePath) {
     }
 }
 
+const normalizeFK = (val) => {
+    if (val === undefined) return undefined
+    if (val === null || val === "null" || val === "") return null
+    return val
+}
+
 router.post("/create", 
     verifyToken,
     upload.fields([
@@ -72,8 +78,8 @@ router.post("/create",
     try {
         const { nama_personel, no_hp, sim_expired_at, siml_expired_at, is_driver, def_helper, def_vt } = req.body
 
-        let def_helper_dump = def_helper
-        let def_vt_dump = def_vt
+        let def_helper_dump = normalizeFK(def_helper)
+        let def_vt_dump = normalizeFK(def_vt)
 
         if (!is_driver) {
             def_helper_dump = null
