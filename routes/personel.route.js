@@ -117,6 +117,7 @@ router.post(
     ]),
     async (req, res) => {
         try {
+            return res.json({ message: "Fungsi update personel sedang dinonaktifkan sementara" })
             const {
                 personel_id,
                 nama_personel,
