@@ -134,8 +134,8 @@ router.post(
                 def_vt
             } = req.body
 
-            let def_helper_dump = def_helper
-            let def_vt_dump = def_vt
+            let def_helper_dump = normalizeFK(def_helper)
+            let def_vt_dump = normalizeFK(def_vt)
 
             if (!is_driver) {
                 def_helper_dump = null
