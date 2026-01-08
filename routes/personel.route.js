@@ -117,7 +117,6 @@ router.post(
     ]),
     async (req, res) => {
         try {
-            return res.json({ message: "Fungsi update personel sedang dinonaktifkan sementara" })
             const {
                 personel_id,
                 nama_personel,
@@ -139,22 +138,22 @@ router.post(
 
             const personel = await Personel.findOne({ where: { personel_id } })
 
-            if (req.body.foto === null || !req.body.ktp && personel.foto) {
+            if (req.body.foto === null && personel.foto) {
                 deleteFileIfExists(personel.foto)
                 personel.foto = null
             }
             
-            if ((req.body.ktp === null || !req.body.ktp) && personel.ktp) {
+            if (req.body.ktp === null && personel.ktp) {
                 deleteFileIfExists(personel.ktp)
                 personel.ktp = null
             }
             
-            if (req.body.sim === null || !req.body.ktp && personel.sim) {
+            if (req.body.sim === null && personel.sim) {
                 deleteFileIfExists(personel.sim)
                 personel.sim = null
             }
             
-            if (req.body.siml === null || !req.body.ktp && personel.siml) {
+            if (req.body.siml === null && personel.siml) {
                 deleteFileIfExists(personel.siml)
                 personel.siml = null
             }
