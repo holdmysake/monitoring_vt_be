@@ -33,7 +33,7 @@ router.post("/get", verifyToken, async (req, res) => {
                 {
                     model: Personel,
                     as: 'personels',
-                    attributes: ['personel_id', 'nama_personel']
+                    attributes: ['personel_id', 'nama_personel', 'is_driver', 'def_helper']
                 }
             ]
         })
