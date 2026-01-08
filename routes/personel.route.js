@@ -138,6 +138,9 @@ router.post(
 
             const personel = await Personel.findOne({ where: { personel_id } })
 
+            // log req.body to json
+            console.log("Request Body:", JSON.stringify(req.body, null, 2))
+
             if (req.body.foto === null && personel.foto) {
                 deleteFileIfExists(personel.foto)
                 personel.foto = null
