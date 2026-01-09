@@ -166,6 +166,14 @@ router.post(
                 personel.siml = null
             }
 
+            if (req.body.sim_expired_at === null || req.body.sim_expired_at === "null") {
+                personel.sim_expired_at = null
+            }
+
+            if (req.body.siml_expired_at === null || req.body.siml_expired_at === "null") {
+                personel.siml_expired_at = null
+            }
+
             if (!personel) {
                 deleteUploadedFiles(req.files)
                 return res.status(404).json({ message: "Personel tidak ditemukan" })
