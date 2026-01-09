@@ -97,6 +97,14 @@ const defineAssociation = models => {
         onDelete: 'SET NULL'
     })
 
+    models.Personel.hasOne(models.Personel, {
+        foreignKey: 'def_helper',
+        sourceKey: 'personel_id',
+        as: 'driver',
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
+    })
+
     models.Personel.belongsTo(models.VT, {
         foreignKey: 'def_vt',
         targetKey: 'vt_id',

@@ -5,6 +5,7 @@ import path from "path"
 import Personel from "../models/personel.model.js"
 import { verifyToken } from "../middlewares/user.middleware.js"
 import VT from "../models/vt.model.js"
+import { Op } from "sequelize"
 
 const router = express.Router()
 
@@ -437,6 +438,32 @@ router.post("/getHelperSJ", verifyToken, async (req, res) => {
 
         res.json({
             message: "Daftar helper untuk surat jalan berhasil diambil",
+            helpers
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: error.message })
+    }
+})
+router.post("/getAvailableHelpers", verifyToken, async (req, res) => {
+    try {
+        const helpers = await Personel.findAll({
+            where: {
+                is_driver: 0
+            },
+            include: [
+                {
+                    model: Personel,
+                    as: 'driver',
+                    on: {
+                        def_helper: { [Op.col]: 'Personel.personel_id' }
+                    }
+                }
+            ]
+        })
+
+        res.json({
+            message: "Daftar helper tersedia berhasil diambil",
             helpers
         })
     } catch (error) {
