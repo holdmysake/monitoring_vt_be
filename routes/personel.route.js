@@ -458,7 +458,7 @@ router.post("/getAvailableHelpers", verifyToken, async (req, res) => {
                     model: Personel,
                     as: 'driver',
                     required: false,
-                    attributes: ['personel_id', 'nama_personel']
+                    attributes: ['personel_id']
                 }
             ],
             having: sequelize.where(
