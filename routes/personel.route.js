@@ -466,7 +466,7 @@ router.post("/getAvailableHelpers", verifyToken, async (req, res) => {
                 Op.is,
                 null
             ),
-            attributes: ['personel_id', 'nama_personel']
+            // attributes: ['personel_id', 'nama_personel']
         })
 
         res.json({
