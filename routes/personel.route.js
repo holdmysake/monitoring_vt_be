@@ -465,7 +465,8 @@ router.post("/getAvailableHelpers", verifyToken, async (req, res) => {
                 sequelize.col('driver.personel_id'),
                 Op.is,
                 null
-            )
+            ),
+            attributes: ['personel_id', 'nama_personel']
         })
 
         res.json({
