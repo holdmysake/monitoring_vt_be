@@ -68,6 +68,11 @@ const normalizeFK = (val) => {
     return val
 }
 
+const normalizeDate = (v) => {
+    if (!v || v === "null" || v === "Invalid date") return null
+    return v
+}
+
 router.post("/create", 
     verifyToken,
     upload.fields([
@@ -201,12 +206,8 @@ router.post(
 
             personel.nama_personel = nama_personel
             personel.no_hp = no_hp
-            if (sim_expired_at !== null) {
-                personel.sim_expired_at = sim_expired_at
-            }
-            if (siml_expired_at !== null) {
-                personel.siml_expired_at = siml_expired_at
-            }
+            personel.sim_expired_at = normalizeDate(sim_expired_at)
+            personel.siml_expired_at = normalizeDate(siml_expired_at)
             personel.is_driver = is_driver
             personel.def_helper = def_helper_dump
             personel.def_vt = def_vt_dump
