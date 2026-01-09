@@ -445,21 +445,22 @@ router.post("/getHelperSJ", verifyToken, async (req, res) => {
         res.status(500).json({ message: error.message })
     }
 })
+
 router.post("/getAvailableHelpers", verifyToken, async (req, res) => {
     try {
         const helpers = await Personel.findAll({
             where: {
-                is_driver: 0
-            },
-            include: [
-                {
-                    model: Personel,
-                    as: 'driver',
-                    on: {
-                        def_helper: { [Op.col]: 'Personel.personel_id' }
-                    }
+                is_driver: 0,
+                personel_id: {
+                    [Op.notIn]: sequelize.literal(`
+                        (
+                            SELECT def_helper
+                            FROM personel
+                            WHERE def_helper IS NOT NULL
+                        )
+                    `)
                 }
-            ]
+            }
         })
 
         res.json({
