@@ -6,6 +6,7 @@ import Personel from "../models/personel.model.js"
 import { verifyToken } from "../middlewares/user.middleware.js"
 import VT from "../models/vt.model.js"
 import { Op } from "sequelize"
+import sequelize from "../db.js"
 
 const router = express.Router()
 
