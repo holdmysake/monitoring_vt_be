@@ -201,8 +201,12 @@ router.post(
 
             personel.nama_personel = nama_personel
             personel.no_hp = no_hp
-            personel.sim_expired_at = sim_expired_at
-            personel.siml_expired_at = siml_expired_at
+            if (sim_expired_at !== null) {
+                personel.sim_expired_at = sim_expired_at
+            }
+            if (siml_expired_at !== null) {
+                personel.siml_expired_at = siml_expired_at
+            }
             personel.is_driver = is_driver
             personel.def_helper = def_helper_dump
             personel.def_vt = def_vt_dump
