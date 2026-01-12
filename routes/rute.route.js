@@ -31,6 +31,7 @@ router.post("/get", verifyToken, async (req, res) => {
         const rutes = await Rute.findAll({
             include: [{
                 model: User,
+                as: 'supervisor',
                 attributes: ['user_id', 'nama']
             }]
         })
