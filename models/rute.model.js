@@ -44,6 +44,11 @@ const Rute = sequelize.define('rute', {
     buffer: {
         type: DataTypes.FLOAT,
         allowNull: true
+    },
+
+    path: {
+        type: DataTypes.TEXT,
+        allowNull: true
     }
 }, {
     tableName: 'rute',

@@ -6,7 +6,7 @@ const router = express.Router()
 
 router.post("/create", verifyToken, async (req, res) => {
     try {
-        const { nama, jarak, user_id } = req.body
+        const { nama, jarak, user_id, file } = req.body
 
         const new_rute = await Rute.create({
             rute_id: `RUTE-${Math.random().toString(36).substring(2, 7).toUpperCase()}`,
