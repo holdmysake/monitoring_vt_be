@@ -11,7 +11,7 @@ router.post("/create", verifyToken, async (req, res) => {
 
         const new_rute = await Rute.create({
             rute_id: `RUTE-${Math.random().toString(36).substring(2, 7).toUpperCase()}`,
-            nama_rute: nama,
+            nama_rute,
             jarak,
             user_id,
             tipe_rute,
