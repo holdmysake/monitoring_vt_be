@@ -30,7 +30,7 @@ router.post("/create", verifyToken, async (req, res) => {
 
 router.post("/update", verifyToken, async (req, res) => {
     try {
-        const { rute_id, nama, jarak, user_id, tipe_rute, buffer } = req.body
+        const { rute_id, nama_rute, jarak, user_id, tipe_rute, buffer } = req.body
 
         const rute = await Rute.findOne({ where: { rute_id } })
 
@@ -38,7 +38,7 @@ router.post("/update", verifyToken, async (req, res) => {
             return res.status(404).json({ message: "Rute tidak ditemukan" })
         }
 
-        rute.nama_rute = nama
+        rute.nama_rute = nama_rute
         rute.jarak = jarak
         rute.user_id = user_id
         rute.tipe_rute = tipe_rute
