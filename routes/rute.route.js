@@ -55,6 +55,49 @@ router.post("/update", verifyToken, async (req, res) => {
     }
 })
 
+router.post("/getByID", verifyToken, async (req, res) => {
+    try {
+        const { rute_id } = req.body
+
+        const rute = await Rute.findOne({
+            where: { rute_id },
+            include: [{
+                model: User,
+                as: 'supervisor',
+                attributes: ['user_id', 'nama']
+            }]
+        })
+
+        if (!rute) {
+            return res.status(404).json({ message: "Rute tidak ditemukan" })
+        }
+
+        res.json({
+            message: "Berhasil mengambil data rute",
+            rute
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: error.message })
+    }
+})
+
+router.post("/getLastRute", verifyToken, async (req, res) => {
+    try {
+        const last_rute = await Rute.findOne({
+            order: [['id', 'DESC']]
+        })
+
+        res.json({
+            message: "Berhasil mengambil data rute terakhir",
+            rute: last_rute
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: error.message })
+    }
+})
+
 router.post("/get", verifyToken, async (req, res) => {
     try {
         const rutes = await Rute.findAll({
