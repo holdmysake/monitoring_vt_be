@@ -28,6 +28,27 @@ router.post("/create", verifyToken, async (req, res) => {
     }
 })
 
+router.post("/delete", verifyToken, async (req, res) => {
+    try {
+        const { rute_id } = req.body
+
+        const rute = await Rute.findOne({ where: { rute_id } })
+
+        if (!rute) {
+            return res.status(404).json({ message: "Rute tidak ditemukan" })
+        }
+
+        await rute.destroy()
+
+        res.json({
+            message: "Rute berhasil dihapus"
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: error.message })
+    }
+})
+
 router.post("/update", verifyToken, async (req, res) => {
     try {
         const { rute_id, nama_rute, jarak, user_id, tipe_rute, buffer } = req.body
