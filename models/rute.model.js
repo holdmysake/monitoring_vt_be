@@ -33,7 +33,7 @@ const Rute = sequelize.define('rute', {
             key: 'user_id'
         },
         onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        onDelete: 'SET NULL'
     },
 
     tipe_rute: {

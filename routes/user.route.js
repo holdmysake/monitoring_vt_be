@@ -93,6 +93,80 @@ router.post("/create", verifyToken, async(req, res) => {
     }
 })
 
+router.post("/update", verifyToken, async (req, res) => {
+    try {
+        const { user_id, username, nama, email, no_hp, jabatan } = req.body
+
+        const user = await User.findOne({ where: { user_id } })
+
+        user.username = username
+        user.nama = nama
+        user.email = email
+        user.no_hp = no_hp
+        user.jabatan = jabatan
+        await user.save()
+
+        res.json({
+            message: "User berhasil diupdate",
+            user
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: error.message })
+    }
+})
+
+router.post("/delete", verifyToken, async (req, res) => {
+    try {
+        const { user_id } = req.body
+
+        const user = await User.findOne({ where: { user_id } })
+
+        await user.destroy()
+
+        res.json({
+            message: "User berhasil dihapus"
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: error.message })
+    }
+})
+
+router.post("/getByID", verifyToken, async (req, res) => {
+    try {
+        const { user_id } = req.body
+
+        const user = await User.findOne({
+            where: { user_id }
+        })
+
+        res.json({
+            message: "Berhasil mengambil data user",
+            user
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: error.message })
+    }
+})
+
+router.post("/getLast", verifyToken, async (req, res) => {
+    try {
+        const user = await User.findOne({
+            order: [['id', 'DESC']]
+        })
+
+        res.json({
+            message: "Berhasil mengambil data user terakhir",
+            user
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: error.message })
+    }
+})
+
 router.post("/getUser", verifyToken, async (req, res) => {
     try {
         const users = await User.findAll({
