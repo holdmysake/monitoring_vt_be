@@ -95,13 +95,19 @@ router.post("/create", verifyToken, async(req, res) => {
 
 router.post("/update", verifyToken, async (req, res) => {
     try {
-        const { user_id, username, nama, email, no_hp, jabatan } = req.body
+        const { user_id, username, nama, email, password, no_hp, jabatan } = req.body
 
         const user = await User.findOne({ where: { user_id } })
+
+        let bcryptPassword
+        if (password !== '' && password !== null && password !== undefined) {
+            bcryptPassword = await bcrypt.hash(password, 12)
+        }
 
         user.username = username
         user.nama = nama
         user.email = email
+        user.password = bcryptPassword
         user.no_hp = no_hp
         user.jabatan = jabatan
         await user.save()
