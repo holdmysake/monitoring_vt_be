@@ -26,6 +26,45 @@ router.post("/create", verifyToken, async (req, res) => {
     }
 })
 
+router.post("/update", verifyToken, async (req, res) => {
+    try {
+        const { vt_id, plat, no_vt, kapasitas } = req.body
+
+        const vt = await VT.findOne({ where: { vt_id } })
+
+        vt.plat = plat
+        vt.no_vt = no_vt
+        vt.kapasitas = kapasitas
+
+        await vt.save()
+
+        res.json({
+            message: "VT berhasil diupdate",
+            vt
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: error.message })
+    }
+})
+
+router.post("/delete", verifyToken, async (req, res) => {
+    try {
+        const { vt_id } = req.body
+
+        const vt = await VT.findOne({ where: { vt_id } })
+
+        await vt.destroy()
+
+        res.json({
+            message: "VT berhasil dihapus"
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: error.message })
+    }
+})
+
 router.post("/get", verifyToken, async (req, res) => {
     try {
         const vts = await VT.findAll({
@@ -41,6 +80,40 @@ router.post("/get", verifyToken, async (req, res) => {
         res.json({
             message: "Berhasil mengambil data VT",
             vts
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: error.message })
+    }
+})
+
+router.post("/getByID", verifyToken, async (req, res) => {
+    try {
+        const { vt_id } = req.body
+
+        const vt = await VT.findOne({
+            where: { vt_id }
+        })
+
+        res.json({
+            message: "Berhasil mengambil data VT",
+            vt
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: error.message })
+    }
+})
+
+router.post("/getLast", verifyToken, async (req, res) => {
+    try {
+        const vt = await VT.findOne({
+            order: [['id', 'DESC']]
+        })
+
+        res.json({
+            message: "Berhasil mengambil data VT terakhir",
+            vt
         })
     } catch (error) {
         console.error(error)
