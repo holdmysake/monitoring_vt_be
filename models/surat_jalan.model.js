@@ -36,7 +36,7 @@ const SuratJalan = sequelize.define('surat_jalan', {
             key: 'rute_id'
         },
         onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        onDelete: 'SET NULL'
     },
 
     supervisor_id: {
@@ -47,7 +47,7 @@ const SuratJalan = sequelize.define('surat_jalan', {
             key: 'user_id'
         },
         onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        onDelete: 'SET NULL'
     },
 
     dispatcher_id: {
@@ -58,7 +58,7 @@ const SuratJalan = sequelize.define('surat_jalan', {
             key: 'user_id'
         },
         onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        onDelete: 'SET NULL'
     },
 
     vt_id: {
