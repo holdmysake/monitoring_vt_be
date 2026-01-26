@@ -533,6 +533,7 @@ const getSuratJalanAll = async (where) => {
 router.post("/get", verifyToken, async (req, res) => {
     try {
         const { surat_jalan_id } = req.body
+        console.log("Get SJ:", surat_jalan_id)
 
         const surat_jalan = await getSuratJalanOne({ surat_jalan_id })
 
