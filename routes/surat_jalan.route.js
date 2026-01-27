@@ -271,171 +271,6 @@ router.post("/create", verifyToken, async (req, res) => {
     }
 })
 
-/*
-router.post("/create", async (req, res) => {
-    try {
-        const { 
-            rute_id, supervisor_id, dispatcher_id, date, vt_id,
-            driver1, driver2, helper1, helper2,
-            bbm, time_out, time_back
-        } = req.body
-
-        const start = moment().startOf("year").format("YYYY-MM-DD")
-        const end   = moment().endOf("year").format("YYYY-MM-DD")
-        const year = moment(start).format("YYYY")
-
-        const sj_count_raw = await SuratJalan.count({
-            where: { date: { [Op.between]: [start, end] } }
-        })
-        const sj_count = String(sj_count_raw + 1).padStart(3, '0')
-
-        const vt = await VT.findOne({ where: { vt_id } })
-        const surat_jalan_id = `SJ-${Math.random().toString(36).substring(2, 19).toUpperCase()}`
-
-        const qr = { surat_jalan_id }
-        const qrString = JSON.stringify(qr)
-        const qrImage = await QRCode.toDataURL(qrString)
-
-        const new_surat_jalan = await SuratJalan.create({
-            surat_jalan_id,
-            no_surat_jalan: `SJ-VT/${vt.no_vt}/${year}/${sj_count}`,
-            qr: qrImage,
-            rute_id,
-            supervisor_id,
-            dispatcher_id,
-            vt_id,
-            date,
-            bbm,
-            time_out,
-            time_back
-        })
-
-        if (new_surat_jalan) {
-            const roles = [
-                { id: driver1, role: "driver1" },
-                { id: driver2, role: "driver2" },
-                { id: helper1, role: "helper1" },
-                { id: helper2, role: "helper2" }
-            ]
-
-            const filtered = roles.filter(r => r.id)
-
-            for (const r of filtered) {
-                await PersonelSuratJalan.create({
-                    surat_jalan_id: new_surat_jalan.surat_jalan_id,
-                    personel_id: r.id,
-                    role: r.role
-                })
-            }
-        }
-
-        qrcode.generate(qrString, { small: true })
-        console.log("QR Surat Jalan:", surat_jalan_id)
-
-        try {
-            const templatePath = path.join(__dirname, "../data/template_sj.docx")
-            const content = readFileSync(templatePath, "binary")
-        
-            const zip = new PizZip(content)
-        
-            const imageOpts = {
-                centered: false,
-                getImage: function (tagValue) {
-                    const base64 = tagValue.replace(/^data:image\/\w+base64,/, "")
-                    return Buffer.from(base64, "base64")
-                },
-                getSize: function () {
-                    return [150, 150]
-                }
-            }
-            
-            const doc = new Docxtemplater(zip, {
-                modules: [new ImageModule(imageOpts)],
-                paragraphLoop: true,
-                linebreaks: true,
-                delimiters: { start: '[[', end: ']]' }
-            })
-
-            const sj = await SuratJalan.findOne({
-                where: { surat_jalan_id: new_surat_jalan.surat_jalan_id },
-                include: [
-                    {
-                        model: Rute,
-                        as: 'rute',
-                        attributes: ['nama_rute']
-                    },
-                    {
-                        model: PersonelSuratJalan,
-                        as: 'personel_surat_jalan',
-                        include: {
-                            model: Personel,
-                            as: 'personel',
-                            attributes: ['nama_personel']
-                        },
-                        attributes: ['personel_id', 'role']
-                    },
-                    {
-                        model: VT,
-                        as: 'vt'
-                    },
-                    {
-                        model: User,
-                        as: 'dispatcher',
-                        attributes: ['nama']
-                    }
-                ]
-            })
-
-            const qrBase64 = qrImage.replace(/^data:image\/pngbase64,/, "")
-            const format = (n) => n ? new Intl.NumberFormat("id-ID").format(n) : ""
-            const formatTime = (t) => t ? moment(t, "HH:mm:ss").format("HH:mm") : ""
-        
-            doc.render({
-                no_sj: new_surat_jalan.no_surat_jalan || "",
-                date: moment(sj.date).format("DD-MM-YYYY") || "",
-                rute: sj.rute.nama_rute || "",
-                driver1: sj.personel_surat_jalan.find(p => p.role === "driver1")?.personel?.nama_personel || "",
-                helper1: sj.personel_surat_jalan.find(p => p.role === "helper1")?.personel?.nama_personel || "",
-                driver2: sj.personel_surat_jalan.find(p => p.role === "driver2")?.personel?.nama_personel || "",
-                helper2: sj.personel_surat_jalan.find(p => p.role === "helper2")?.personel?.nama_personel || "",
-                no_vt: sj.vt.no_vt || "",
-                plat: sj.vt.plat || "",
-                kapasitas: sj.vt.kapasitas ? `${format(sj.vt.kapasitas)} L` : "",
-                bbm: sj.bbm ? `${format(sj.bbm)} L` : "",
-                time_out: sj.time_out ? `${formatTime(sj.time_out)} WIB` : "",
-                time_back: sj.time_back ? `${formatTime(sj.time_back)} WIB` : "",
-                dispatcher: sj.dispatcher.nama || "",
-                qr: qrBase64
-            })
-        
-            const buf = doc.getZip().generate({
-                type: "nodebuffer",
-                compression: "DEFLATE"
-            })
-        
-            const outputDir = path.join(__dirname, "../uploads/sj")
-            const filePath = path.join(outputDir, `${new_surat_jalan.surat_jalan_id}.docx`)
-        
-            writeFileSync(filePath, buf)
-            console.log("File SJ dibuat:", filePath)
-        
-        } catch (e) {
-            const errorLogPath = path.join(__dirname, "../uploads/sj/log_error.txt")
-            writeFileSync(errorLogPath, JSON.stringify(e, null, 2))
-        
-            console.error("DOCX ERROR (saved to file):", errorLogPath)
-        }        
-
-        res.json({
-            message: "Surat Jalan berhasil ditambahkan"
-        })
-    } catch (error) {
-        console.error(error)
-        res.status(500).json({ message: error.message })
-    }
-})
-*/
-
 const getSuratJalanOne = async (where) => {
     return await SuratJalan.findOne({
         where: where,
@@ -533,7 +368,6 @@ const getSuratJalanAll = async (where) => {
 router.post("/get", verifyToken, async (req, res) => {
     try {
         const { surat_jalan_id } = req.body
-        console.log("Get SJ:", surat_jalan_id)
 
         const surat_jalan = await getSuratJalanOne({ surat_jalan_id })
 
@@ -630,8 +464,7 @@ router.post("/trip", verifyToken, async (req, res) => {
 
             const roles = [
                 { id: driver, role: "driver" },
-                { id: helper, role: "helper" },
-                { id: op_loading, role: "op_loading" }
+                { id: helper, role: "helper" }
             ].filter(p => p.id)
 
             for (const p of roles) {
@@ -642,6 +475,11 @@ router.post("/trip", verifyToken, async (req, res) => {
                 }, { transaction: t })
             }
 
+            await PersonelTrip.create({
+                trip_id: newTripId,
+                user_id: operatorId,
+                role: "op_loading"
+            })
         } else {
             trip.volume_unloading = volume_unloading
             trip.jam_unloading = jam_unloading
@@ -652,7 +490,7 @@ router.post("/trip", verifyToken, async (req, res) => {
             if (op_unloading) {
                 await PersonelTrip.create({
                     trip_id: trip.trip_id,
-                    personel_id: op_unloading,
+                    user_id: op_unloading,
                     role: "op_unloading"
                 }, { transaction: t })
             }
