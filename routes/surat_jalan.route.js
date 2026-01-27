@@ -479,7 +479,7 @@ router.post("/trip", verifyToken, async (req, res) => {
                 trip_id: newTripId,
                 user_id: operatorId,
                 role: "op_loading"
-            })
+            }, { transaction: t })
         } else {
             trip.volume_unloading = volume_unloading
             trip.jam_unloading = jam_unloading
