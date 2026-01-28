@@ -450,8 +450,10 @@ router.post("/trip", verifyToken, async (req, res) => {
             }
         }
 
+        let newTripId = null
+
         if (!trip) {
-            const newTripId = `T-${Math.random().toString(36).substring(2, 20).toUpperCase()}`
+            newTripId = `T-${Math.random().toString(36).substring(2, 20).toUpperCase()}`
 
             await TripSuratJalan.create({
                 trip_id: newTripId,
