@@ -498,7 +498,10 @@ router.post("/trip", verifyToken, async (req, res) => {
 
         await t.commit()
 
-        res.json({ message: "Trip berhasil diproses" })
+        res.json({
+            message: "Trip berhasil diproses",
+            trip
+        })
 
     } catch (error) {
         console.error(error)
