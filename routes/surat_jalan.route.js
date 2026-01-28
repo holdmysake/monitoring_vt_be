@@ -496,7 +496,7 @@ router.post("/trip", verifyToken, async (req, res) => {
             }
         }
 
-        trip = await TripSuratJalan.findOne({
+        const trip_response = await TripSuratJalan.findOne({
             where: { trip_id: trip_id ? trip_id : newTripId },
             include: [
                 {
@@ -518,7 +518,7 @@ router.post("/trip", verifyToken, async (req, res) => {
 
         res.json({
             message: "Trip berhasil diproses",
-            trip
+            trip: trip_response
         })
 
     } catch (error) {
