@@ -496,6 +496,24 @@ router.post("/trip", verifyToken, async (req, res) => {
             }
         }
 
+        trip = await TripSuratJalan.findOne({
+            where: { trip_id: trip_id ? trip_id : newTripId },
+            include: [
+                {
+                    model: PersonelTrip,
+                    as: 'personel_trip',
+                    include: {
+                        model: Personel,
+                        as: 'personel'
+                    }
+                },
+                {
+                    model: Rute,
+                    as: 'rute'
+                }
+            ]
+        }, { transaction: t })
+
         await t.commit()
 
         res.json({
