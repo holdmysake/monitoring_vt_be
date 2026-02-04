@@ -40,7 +40,12 @@ const TripSuratJalan = sequelize.define('trip_surat_jalan', {
         onDelete: 'CASCADE'
     },
 
-    volume_loading: {
+    gross_loading: {
+        type: DataTypes.FLOAT,
+        allowNull: false
+    },
+
+    net_loading: {
         type: DataTypes.FLOAT,
         allowNull: false
     },
@@ -50,18 +55,18 @@ const TripSuratJalan = sequelize.define('trip_surat_jalan', {
         allowNull: false
     },
 
-    volume_unloading: {
+    gross_unloading: {
+        type: DataTypes.FLOAT,
+        allowNull: true
+    },
+
+    net_unloading: {
         type: DataTypes.FLOAT,
         allowNull: true
     },
 
     jam_unloading: {
         type: DataTypes.TIME,
-        allowNull: true
-    },
-
-    selisih: {
-        type: DataTypes.FLOAT,
         allowNull: true
     },
 

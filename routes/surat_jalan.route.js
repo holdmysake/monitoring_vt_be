@@ -419,7 +419,8 @@ router.post("/trip", verifyToken, async (req, res) => {
     try {
         const { 
             trip_id, surat_jalan_id, rute_id,
-            volume_loading, volume_unloading,
+            gross_loading, net_loading,
+            gross_unloading, net_unloading,
             jam_loading, jam_unloading, no_segel,
             driver, helper, op_loading, op_unloading
         } = req.body
@@ -459,7 +460,8 @@ router.post("/trip", verifyToken, async (req, res) => {
                 trip_id: newTripId,
                 surat_jalan_id,
                 rute_id,
-                volume_loading,
+                gross_loading,
+                net_loading,
                 jam_loading,
                 no_segel
             }, { transaction: t })
@@ -483,9 +485,9 @@ router.post("/trip", verifyToken, async (req, res) => {
                 role: "op_loading"
             }, { transaction: t })
         } else {
-            trip.volume_unloading = volume_unloading
+            trip.gross_unloading = gross_unloading
+            trip.net_unloading = net_unloading
             trip.jam_unloading = jam_unloading
-            trip.selisih = trip.volume_loading - volume_unloading
 
             await trip.save({ transaction: t })
 
