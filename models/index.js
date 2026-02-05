@@ -6,6 +6,7 @@ import TripSuratJalan from './trip_surat_jalan.model.js'
 import PersonelSuratJalan from './personel_surat_jalan.model.js'
 import PersonelTrip from './personel_trip.model.js'
 import VT from './vt.model.js'
+import RevisiTrip from './revisi_trip.model.js'
 
 const Models = {
     User,
@@ -15,7 +16,8 @@ const Models = {
     TripSuratJalan,
     PersonelSuratJalan,
     PersonelTrip,
-    VT
+    VT,
+    RevisiTrip
 }
 
 export {

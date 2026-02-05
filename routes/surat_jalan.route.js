@@ -18,6 +18,7 @@ import { fileURLToPath } from "url"
 import { PDFDocument, rgb } from "pdf-lib"
 import fontkit from "@pdf-lib/fontkit"
 import { verifyToken } from "../middlewares/user.middleware.js"
+import RevisiTrip from "../models/revisi_trip.model.js"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -531,6 +532,197 @@ router.post("/trip", verifyToken, async (req, res) => {
     } catch (error) {
         console.error(error)
         await t.rollback()
+        res.status(500).json({ message: error.message })
+    }
+})
+
+router.post("/updateTrip", verifyToken, async (req, res) => {
+    try {
+        const {
+            trip_id,
+            gross_loading, net_loading,
+            gross_unloading, net_unloading
+        } = req.body
+
+        const trip = await TripSuratJalan.findOne({ where: { trip_id } })
+
+        if (!trip) {
+            return res.status(404).json({ message: "Trip tidak ditemukan" })
+        }
+
+        trip.gross_loading = gross_loading
+        trip.net_loading = net_loading
+        trip.gross_unloading = gross_unloading
+        trip.net_unloading = net_unloading
+
+        await trip.save()
+
+        res.json({
+            message: "Trip berhasil diperbarui",
+            trip
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: error.message })
+    }
+})
+
+router.post("/createRevisiTrip", verifyToken, async (req, res) => {
+    try {
+        const {
+            trip_id, supervisor_id, operator_id,
+            column_revisi, value_revisi, reason_revisi
+        } = req.body
+
+        const revisi_id = `RT-${Math.random().toString(36).substring(2, 14).toUpperCase()}`
+
+        const revisi_trip = await RevisiTrip.create({
+            revisi_id,
+            trip_id,
+            supervisor_id,
+            column_revisi,
+            value_revisi,
+            reason_revisi,
+            operator_id
+        })
+
+        res.json({
+            message: "Revisi Trip berhasil ditambahkan",
+            revisi_trip
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: error.message })
+    }
+})
+
+router.post("/getRevisiTrips", verifyToken, async (req, res) => {
+    try {
+        const revisi_trips = await RevisiTrip.findAll({
+            include: [
+                {
+                    model: TripSuratJalan,
+                    as: 'trip'
+                },
+                {
+                    model: User,
+                    as: 'supervisor'
+                },
+                {
+                    model: Personel,
+                    as: 'operator'
+                }
+            ],
+            order: [['createdAt', 'DESC']]
+        })
+
+        res.json({
+            message: "Revisi Trip berhasil diambil",
+            revisi_trips
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: error.message })
+    }
+})
+
+router.post("/getRevisiTripsBySupervisor", verifyToken, async (req, res) => {
+    try {
+        const { supervisor_id } = req.body
+
+        const revisi_trips = await RevisiTrip.findAll({
+            where: { supervisor_id },
+            include: [
+                {
+                    model: TripSuratJalan,
+                    as: 'trip'
+                },
+                {
+                    model: User,
+                    as: 'supervisor'
+                },
+                {
+                    model: Personel,
+                    as: 'operator'
+                }
+            ]
+        })
+
+        res.json({
+            message: "Revisi Trip berhasil diambil",
+            revisi_trips
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: error.message })
+    }
+})
+
+router.post("/acceptRevisiTrip", verifyToken, async (req, res) => {
+    try {
+        const { revisi_id, value_revisi } = req.body
+
+        const revisi_trip = await RevisiTrip.findOne({ where: { revisi_id } })
+
+        if (!revisi_trip) {
+            return res.status(404).json({ message: "Revisi Trip tidak ditemukan" })
+        }
+
+        const trip = await TripSuratJalan.findOne({ 
+            where: { trip_id: revisi_trip.trip_id },
+            include: [
+                {
+                    model: PersonelTrip,
+                    as: 'personel_trip'
+                }
+            ]
+        })
+
+        if (!trip) {
+            return res.status(404).json({ message: "Trip tidak ditemukan" })
+        }
+
+        const raw_operator_type = trip.personel_trip.find(pt => pt.user_id === revisi_trip.operator_id)
+        const operator_type = raw_operator_type.role
+
+        const volume_type = operator_type === "op_loading" ? "loading" : "unloading"
+        const column = revisi_trip.column_revisi + "_" + volume_type
+
+        if (!value_revisi || value_revisi === "") {
+            trip[column] = revisi_trip.value_revisi
+        } else {
+            trip[column] = value_revisi
+        }
+
+        await trip.save()
+        await revisi_trip.destroy()
+
+        res.json({
+            message: "Revisi Trip berhasil diterima dan dihapus"
+        })
+    } catch (error) {   
+        console.error(error)
+        res.status(500).json({ message: error.message })
+    }
+})
+
+router.post("/rejectRevisiTrip", verifyToken, async (req, res) => {
+    try {
+        const { revisi_id } = req.body
+
+        const revisi_trip = await RevisiTrip.findOne({ where: { revisi_id } })
+
+        if (!revisi_trip) {
+            return res.status(404).json({ message: "Revisi Trip tidak ditemukan" })
+        }
+
+        await revisi_trip.destroy()
+
+        res.json({
+            message: "Revisi Trip berhasil ditolak dan dihapus"
+        })
+    } catch (error) {
+        console.error(error)
         res.status(500).json({ message: error.message })
     }
 })
