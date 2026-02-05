@@ -280,6 +280,24 @@ router.post("/getDrivers", verifyToken, async (req, res) => {
     }
 })
 
+router.post("/getDriversMobile", verifyToken, async (req, res) => {
+    try {
+        const drivers = await Personel.findAll({
+            where: {
+                is_driver: 1
+            }
+        })
+
+        res.json({
+            message: "Daftar driver berhasil diambil",
+            drivers
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: error.message })
+    }
+})
+
 router.post("/getDriverByID", verifyToken, async (req, res) => {
     try {
         const { personel_id } = req.body
