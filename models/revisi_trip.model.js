@@ -27,41 +27,24 @@ const RevisiTrip = sequelize.define('revisi_trip', {
         onDelete: 'CASCADE'
     },
 
-    supervisor_id: {
-        type: DataTypes.STRING(15),
-        allowNull: true,
-        references: {
-            model: User,
-            as: 'supervisor'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
-    },
-
-    column_revisi: {
-        type: DataTypes.ENUM('gross', 'net'),
+    gross_volume: {
+        type: DataTypes.DOUBLE,
         allowNull: false
     },
 
-    value_revisi: {
+    net_volume: {
         type: DataTypes.DOUBLE,
+        allowNull: false
+    },
+
+    is_loading_trip: {
+        type: DataTypes.BOOLEAN,
         allowNull: false
     },
 
     reason_revisi: {
         type: DataTypes.TEXT,
         allowNull: false
-    },
-
-    operator_id: {
-        type: DataTypes.STRING(15),
-        allowNull: false,
-        references: {
-            model: Personel,
-            as: 'operator'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
     }
 }, {
     tableName: 'revisi_trip',

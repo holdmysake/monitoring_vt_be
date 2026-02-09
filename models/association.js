@@ -128,30 +128,6 @@ const defineAssociation = models => {
         sourceKey: 'trip_id',
         as: 'revisi_trips'
     })
-
-    models.RevisiTrip.belongsTo(models.User, {
-        foreignKey: 'supervisor_id',
-        targetKey: 'user_id',
-        as: 'supervisor'
-    })
-
-    models.User.hasMany(models.RevisiTrip, {
-        foreignKey: 'supervisor_id',
-        sourceKey: 'user_id',
-        as: 'revisi_trips'
-    })
-
-    models.RevisiTrip.belongsTo(models.Personel, {
-        foreignKey: 'operator_id',
-        targetKey: 'personel_id',
-        as: 'operator'
-    })
-
-    models.Personel.hasMany(models.RevisiTrip, {
-        foreignKey: 'operator_id',
-        sourceKey: 'personel_id',
-        as: 'revisi_trips'
-    })
 }
 
 export default defineAssociation

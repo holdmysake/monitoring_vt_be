@@ -311,6 +311,10 @@ const getSuratJalanOne = async (where) => {
                     {
                         model: Rute,
                         as: 'rute'
+                    },
+                    {
+                        model: RevisiTrip,
+                        as: 'revisi_trips'
                     }
                 ]
             }
@@ -358,6 +362,10 @@ const getSuratJalanAll = async (where) => {
                     {
                         model: Rute,
                         as: 'rute'
+                    },
+                    {
+                        model: RevisiTrip,
+                        as: 'revisi_trips'
                     }
                 ]
             }
@@ -570,8 +578,7 @@ router.post("/updateTrip", verifyToken, async (req, res) => {
 router.post("/createRevisiTrip", verifyToken, async (req, res) => {
     try {
         const {
-            trip_id, supervisor_id, operator_id,
-            column_revisi, value_revisi, reason_revisi
+            trip_id, gross_volume, net_volume, is_loading_trip, reason_revisi
         } = req.body
 
         const revisi_id = `RT-${Math.random().toString(36).substring(2, 14).toUpperCase()}`
@@ -579,11 +586,10 @@ router.post("/createRevisiTrip", verifyToken, async (req, res) => {
         const revisi_trip = await RevisiTrip.create({
             revisi_id,
             trip_id,
-            supervisor_id,
-            column_revisi,
-            value_revisi,
+            gross_volume,
+            net_volume,
+            is_loading_trip,
             reason_revisi,
-            operator_id
         })
 
         res.json({
@@ -626,41 +632,9 @@ router.post("/getRevisiTrips", verifyToken, async (req, res) => {
     }
 })
 
-router.post("/getRevisiTripsBySupervisor", verifyToken, async (req, res) => {
-    try {
-        const { supervisor_id } = req.body
-
-        const revisi_trips = await RevisiTrip.findAll({
-            where: { supervisor_id },
-            include: [
-                {
-                    model: TripSuratJalan,
-                    as: 'trip'
-                },
-                {
-                    model: User,
-                    as: 'supervisor'
-                },
-                {
-                    model: Personel,
-                    as: 'operator'
-                }
-            ]
-        })
-
-        res.json({
-            message: "Revisi Trip berhasil diambil",
-            revisi_trips
-        })
-    } catch (error) {
-        console.error(error)
-        res.status(500).json({ message: error.message })
-    }
-})
-
 router.post("/acceptRevisiTrip", verifyToken, async (req, res) => {
     try {
-        const { revisi_id, value_revisi } = req.body
+        const { revisi_id, gross_volume, net_volume, is_loading_trip } = req.body
 
         const revisi_trip = await RevisiTrip.findOne({ where: { revisi_id } })
 
@@ -668,30 +642,18 @@ router.post("/acceptRevisiTrip", verifyToken, async (req, res) => {
             return res.status(404).json({ message: "Revisi Trip tidak ditemukan" })
         }
 
-        const trip = await TripSuratJalan.findOne({ 
-            where: { trip_id: revisi_trip.trip_id },
-            include: [
-                {
-                    model: PersonelTrip,
-                    as: 'personel_trip'
-                }
-            ]
-        })
+        const trip = await TripSuratJalan.findOne({ where: { trip_id: revisi_trip.trip_id } })
 
         if (!trip) {
             return res.status(404).json({ message: "Trip tidak ditemukan" })
         }
 
-        const raw_operator_type = trip.personel_trip.find(pt => pt.user_id === revisi_trip.operator_id)
-        const operator_type = raw_operator_type.role
-
-        const volume_type = operator_type === "op_loading" ? "loading" : "unloading"
-        const column = revisi_trip.column_revisi + "_" + volume_type
-
-        if (!value_revisi || value_revisi === "") {
-            trip[column] = revisi_trip.value_revisi
+        if (is_loading_trip) {
+            trip.gross_loading = gross_volume
+            trip.net_loading = net_volume
         } else {
-            trip[column] = value_revisi
+            trip.gross_unloading = gross_volume
+            trip.net_unloading = net_volume
         }
 
         await trip.save()
