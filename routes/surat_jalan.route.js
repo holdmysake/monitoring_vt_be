@@ -422,6 +422,22 @@ router.post("/getSJByDates", verifyToken, async (req, res) => {
     }
 })
 
+router.post("/getSJBySupervisor", verifyToken, async (req, res) => {
+    try {
+        const { supervisor_id } = req.body
+
+        const surat_jalans = await getSuratJalanAll({ supervisor_id })
+
+        res.json({
+            message: "Surat Jalan berhasil diambil",
+            surat_jalans
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: error.message })
+    }
+})
+
 router.post("/trip", verifyToken, async (req, res) => {
     const t = await sequelize.transaction()
 
