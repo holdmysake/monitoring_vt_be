@@ -424,9 +424,12 @@ router.post("/getSJByDates", verifyToken, async (req, res) => {
 
 router.post("/getSJBySupervisor", verifyToken, async (req, res) => {
     try {
-        const { supervisor_id } = req.body
+        const { supervisor_id, date } = req.body
 
-        const surat_jalans = await getSuratJalanAll({ supervisor_id })
+        const surat_jalans = await getSuratJalanAll({
+            supervisor_id,
+            date
+        })
 
         res.json({
             message: "Surat Jalan berhasil diambil",
