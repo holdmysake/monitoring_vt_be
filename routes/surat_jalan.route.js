@@ -467,7 +467,7 @@ router.post("/getDatesWithRevisi", async (req, res) => {
                 }
             ],
             where: { supervisor_id },
-            group: ['SuratJalan.date'],
+            group: ['surat_jalan.date'],
             order: [['date', 'DESC']],
             raw: true
         })
