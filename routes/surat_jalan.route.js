@@ -441,6 +441,47 @@ router.post("/getSJBySupervisor", verifyToken, async (req, res) => {
     }
 })
 
+router.post("/getDatesWithRevisi", async (req, res) => {
+    try {
+        const { supervisor_id } = req.body
+
+        const revisi_trips = await SuratJalan.findAll({
+            attributes: [
+                'date',
+                [fn('COUNT', col('trip_surat_jalan.revisi_trips.revisi_id')), 'total_revisi']
+            ],
+            include: [
+                {
+                    model: TripSuratJalan,
+                    as: 'trip_surat_jalan',
+                    attributes: [],
+                    required: true,
+                    include: [
+                        {
+                            model: RevisiTrip,
+                            as: 'revisi_trips',
+                            attributes: [],
+                            required: true
+                        }
+                    ]
+                }
+            ],
+            where: { supervisor_id },
+            group: ['SuratJalan.date'],
+            order: [['date', 'DESC']],
+            raw: true
+        })
+
+        res.json({
+            message: "Tanggal dengan revisi trip berhasil diambil",
+            revisi_trips
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: error.message })
+    }
+})
+
 router.post("/trip", verifyToken, async (req, res) => {
     const t = await sequelize.transaction()
 
