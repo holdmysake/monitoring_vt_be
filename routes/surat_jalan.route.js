@@ -721,6 +721,7 @@ router.post("/acceptRevisiTrip", verifyToken, async (req, res) => {
         await revisi_trip.destroy()
 
         res.json({
+            success: true,
             message: "Revisi Trip berhasil diterima dan dihapus"
         })
     } catch (error) {   
@@ -742,6 +743,7 @@ router.post("/rejectRevisiTrip", verifyToken, async (req, res) => {
         await revisi_trip.destroy()
 
         res.json({
+            success: true,
             message: "Revisi Trip berhasil ditolak dan dihapus"
         })
     } catch (error) {
