@@ -6,7 +6,7 @@ import PersonelTrip from "../models/personel_trip.model.js"
 import User from "../models/user.model.js"
 import sequelize from "../db.js"
 import moment from "moment-timezone"
-import { col, fn, Op } from "sequelize"
+import { col, fn, literal, Op } from "sequelize"
 import VT from "../models/vt.model.js"
 import QRCode from "qrcode"
 import qrcode from "qrcode-terminal"
@@ -448,7 +448,8 @@ router.post("/getDatesWithRevisi", async (req, res) => {
         const revisi_trips = await SuratJalan.findAll({
             attributes: [
                 'date',
-                [fn('COUNT', col('trip_surat_jalan.revisi_trips.revisi_id')), 'total_revisi']
+                [fn('COUNT', col('trip_surat_jalan.revisi_trips.revisi_id')), 'total_revisi'],
+                [fn('COUNT', literal('DISTINCT surat_jalan.surat_jalan_id')), 'total_surat_jalan']
             ],
             include: [
                 {
