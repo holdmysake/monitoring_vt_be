@@ -17,12 +17,16 @@ router.post("/create", verifyToken, async (req, res) => {
         })
 
         res.json({
+            success: true,
             message: "VT berhasil ditambahkan",
             vt: new_vt
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -39,12 +43,16 @@ router.post("/update", verifyToken, async (req, res) => {
         await vt.save()
 
         res.json({
+            success: true,
             message: "VT berhasil diupdate",
             vt
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -57,11 +65,15 @@ router.post("/delete", verifyToken, async (req, res) => {
         await vt.destroy()
 
         res.json({
+            success: true,
             message: "VT berhasil dihapus"
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -78,12 +90,16 @@ router.post("/get", verifyToken, async (req, res) => {
         })
 
         res.json({
+            success: true,
             message: "Berhasil mengambil data VT",
             vts
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -96,12 +112,16 @@ router.post("/getByID", verifyToken, async (req, res) => {
         })
 
         res.json({
+            success: true,
             message: "Berhasil mengambil data VT",
             vt
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -112,12 +132,16 @@ router.post("/getLast", verifyToken, async (req, res) => {
         })
 
         res.json({
+            success: true,
             message: "Berhasil mengambil data VT terakhir",
             vt
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 

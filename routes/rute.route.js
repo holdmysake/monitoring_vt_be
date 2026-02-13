@@ -19,12 +19,16 @@ router.post("/create", verifyToken, async (req, res) => {
         })
 
         res.json({
+            success: true,
             message: "Rute berhasil ditambahkan",
             rute: new_rute
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -41,11 +45,15 @@ router.post("/delete", verifyToken, async (req, res) => {
         await rute.destroy()
 
         res.json({
+            success: true,
             message: "Rute berhasil dihapus"
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -67,12 +75,16 @@ router.post("/update", verifyToken, async (req, res) => {
         await rute.save()
 
         res.json({
+            success: true,
             message: "Rute berhasil diperbarui",
             rute
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -94,12 +106,16 @@ router.post("/getByID", verifyToken, async (req, res) => {
         }
 
         res.json({
+            success: true,
             message: "Berhasil mengambil data rute",
             rute
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -110,12 +126,16 @@ router.post("/getLastRute", verifyToken, async (req, res) => {
         })
 
         res.json({
+            success: true,
             message: "Berhasil mengambil data rute terakhir",
             rute: last_rute
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -130,12 +150,16 @@ router.post("/get", verifyToken, async (req, res) => {
         })
 
         res.json({
+            success: true,
             message: "Berhasil mengambil data rute",
             rutes
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 

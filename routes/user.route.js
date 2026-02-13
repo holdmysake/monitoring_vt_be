@@ -53,12 +53,16 @@ router.post("/login", async (req, res) => {
         userData.token = token
 
         res.json({
+            success: true,
             message: "Login berhasil",
             user: userData
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -84,12 +88,16 @@ router.post("/create", verifyToken, async(req, res) => {
         })
 
         res.json({
+            success: true,
             message: "User berhasil ditambahkan",
             user: new_user
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -113,12 +121,16 @@ router.post("/update", verifyToken, async (req, res) => {
         await user.save()
 
         res.json({
+            success: true,
             message: "User berhasil diupdate",
             user
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -131,11 +143,15 @@ router.post("/delete", verifyToken, async (req, res) => {
         await user.destroy()
 
         res.json({
+            success: true,
             message: "User berhasil dihapus"
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -148,12 +164,16 @@ router.post("/getByID", verifyToken, async (req, res) => {
         })
 
         res.json({
+            success: true,
             message: "Berhasil mengambil data user",
             user
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -164,12 +184,16 @@ router.post("/getLast", verifyToken, async (req, res) => {
         })
 
         res.json({
+            success: true,
             message: "Berhasil mengambil data user terakhir",
             user
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -182,12 +206,16 @@ router.post("/getUser", verifyToken, async (req, res) => {
         })
 
         res.json({
+            success: true,
             message: "Berhasil mengambil data user",
             users
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -201,12 +229,16 @@ router.post("/getDispatcher", verifyToken, async (req, res) => {
         })
 
         res.json({
+            success: true,
             message: "Berhasil mengambil data user",
             users
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -220,12 +252,16 @@ router.post("/getSupervisor", verifyToken, async (req, res) => {
         })
 
         res.json({
+            success: true,
             message: "Berhasil mengambil data user",
             users
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 

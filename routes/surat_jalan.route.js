@@ -264,11 +264,15 @@ router.post("/create", verifyToken, async (req, res) => {
         }        
 
         res.json({
+            success: true,
             message: "Surat Jalan berhasil ditambahkan"
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -381,12 +385,16 @@ router.post("/get", verifyToken, async (req, res) => {
         const surat_jalan = await getSuratJalanOne({ surat_jalan_id })
 
         res.json({
+            success: true,
             message: "Surat Jalan berhasil diambil",
             surat_jalan
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -413,12 +421,16 @@ router.post("/getSJByDates", verifyToken, async (req, res) => {
         })
 
         res.json({
+            success: true,
             message: "Surat Jalan berhasil diambil",
             surat_jalans
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -432,12 +444,16 @@ router.post("/getSJBySupervisor", verifyToken, async (req, res) => {
         })
 
         res.json({
+            success: true,
             message: "Surat Jalan berhasil diambil",
             surat_jalans
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -474,12 +490,16 @@ router.post("/getDatesWithRevisi", async (req, res) => {
         })
 
         res.json({
+            success: true,
             message: "Tanggal dengan revisi trip berhasil diambil",
             revisi_trips
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -594,6 +614,7 @@ router.post("/trip", verifyToken, async (req, res) => {
         await t.commit()
 
         res.json({
+            success: true,
             message: "Trip berhasil diproses",
             trip: trip_response
         })
@@ -601,7 +622,10 @@ router.post("/trip", verifyToken, async (req, res) => {
     } catch (error) {
         console.error(error)
         await t.rollback()
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -627,12 +651,16 @@ router.post("/updateTrip", verifyToken, async (req, res) => {
         await trip.save()
 
         res.json({
+            success: true,
             message: "Trip berhasil diperbarui",
             trip
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -654,12 +682,16 @@ router.post("/createRevisiTrip", verifyToken, async (req, res) => {
         })
 
         res.json({
+            success: true,
             message: "Revisi Trip berhasil ditambahkan",
             revisi_trip
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -684,12 +716,16 @@ router.post("/getRevisiTrips", verifyToken, async (req, res) => {
         })
 
         res.json({
+            success: true,
             message: "Revisi Trip berhasil diambil",
             revisi_trips
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -726,7 +762,10 @@ router.post("/acceptRevisiTrip", verifyToken, async (req, res) => {
         })
     } catch (error) {   
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -748,7 +787,10 @@ router.post("/rejectRevisiTrip", verifyToken, async (req, res) => {
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 

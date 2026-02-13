@@ -109,13 +109,17 @@ router.post("/create",
         })
 
         res.json({
+            success: true,
             message: "Personel sukses ditambahkan",
             personel: new_personel
         })
     } catch (error) {
         console.error(error)
         deleteUploadedFiles(req.files)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -215,13 +219,17 @@ router.post(
             await personel.save()
 
             res.json({
+                success: true,
                 message: "Personel berhasil diperbarui",
                 personel
             })
         } catch (error) {
             console.error(error)
             deleteUploadedFiles(req.files)
-            res.status(500).json({ message: error.message })
+            res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
         }
     }
 )
@@ -243,10 +251,16 @@ router.post("/delete", verifyToken, async (req, res) => {
 
         await personel.destroy()
 
-        res.json({ message: "Personel berhasil dihapus" })
+        res.json({ 
+            success: true,
+            message: "Personel berhasil dihapus" 
+        })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -271,12 +285,16 @@ router.post("/getDrivers", verifyToken, async (req, res) => {
         })
 
         res.json({
+            success: true,
             message: "Daftar driver berhasil diambil",
             drivers
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -294,7 +312,10 @@ router.post("/getDriversMobile", verifyToken, async (req, res) => {
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -326,12 +347,16 @@ router.post("/getDriverByID", verifyToken, async (req, res) => {
         }
 
         res.json({
+            success: true,
             message: "Driver berhasil diambil",
             driver
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -357,12 +382,16 @@ router.post("/getLastDriver", verifyToken, async (req, res) => {
         })
 
         res.json({
+            success: true,
             message: 'Driver terakhir berhasil diambil',
             driver
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -388,12 +417,16 @@ router.post("/getDriverSJ", verifyToken, async (req, res) => {
         })
 
         res.json({
+            success: true,
             message: "Daftar driver untuk surat jalan berhasil diambil",
             drivers
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -406,12 +439,16 @@ router.post("/getHelpers", verifyToken, async (req, res) => {
         })
 
         res.json({
+            success: true,
             message: "Daftar helper berhasil diambil",
             helpers
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -431,12 +468,16 @@ router.post("/getHelperByID", verifyToken, async (req, res) => {
         }
 
         res.json({
+            success: true,
             message: "Helper berhasil diambil",
             helper
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -450,12 +491,16 @@ router.post("/getLastHelper", verifyToken, async (req, res) => {
         })
 
         res.json({
+            success: true,
             message: 'Helper terakhir berhasil diambil',
             helper
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -469,12 +514,16 @@ router.post("/getHelperSJ", verifyToken, async (req, res) => {
         })
 
         res.json({
+            success: true,
             message: "Daftar helper untuk surat jalan berhasil diambil",
             helpers
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
@@ -501,12 +550,16 @@ router.post("/getAvailableHelpers", verifyToken, async (req, res) => {
         })
 
         res.json({
+            success: true,
             message: "Daftar helper tersedia berhasil diambil",
             helpers
         })
     } catch (error) {
         console.error(error)
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
     }
 })
 
