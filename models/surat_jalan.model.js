@@ -84,11 +84,11 @@ const SuratJalan = sequelize.define('surat_jalan', {
 
     time_out: {
         type: DataTypes.DATE,
-        allowNull: DATE
+        allowNull: true
     },
 
     time_back: {
-        type: DataTypes.TIME,
+        type: DataTypes.DATE,
         allowNull: true
     }
 }, {
