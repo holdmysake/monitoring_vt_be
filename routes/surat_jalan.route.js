@@ -208,8 +208,8 @@ router.post("/create", verifyToken, async (req, res) => {
             drawTextAuto(page, font, sj.vt?.plat, fields.plat)
             drawTextAuto(page, font, sj.vt?.kapasitas ? `${format(sj.vt.kapasitas)} L` : "", fields.kapasitas)
             drawTextAuto(page, font, sj.bbm ? `${format(sj.bbm)} L` : "", fields.bbm)
-            drawTextAuto(page, font, sj.time_out ? `${formatTime(sj.time_out)} WIB` : "", fields.time_out)
-            drawTextAuto(page, font, sj.time_back ? `${formatTime(sj.time_back)} WIB` : "", fields.time_back)
+            drawTextAuto(page, font, sj.time_out ? `${moment(sj.time_out).format("DD-MM-YYYY HH:mm")}` : "", fields.time_out)
+            drawTextAuto(page, font, sj.time_back ? `${moment(sj.time_back).format("DD-MM-YYYY HH:mm")}` : "", fields.time_back)
 
             drawTextAuto(
                 page,
