@@ -84,7 +84,7 @@ router.post("/create", verifyToken, async (req, res) => {
                     [Op.between]: [start, end]
                 }
             },
-            order: [['createdAt', 'DESC']]
+            order: [['id', 'DESC']]
         })
         let sj_count = 1
         if (last_sj) {
