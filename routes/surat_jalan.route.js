@@ -78,10 +78,22 @@ router.post("/create", verifyToken, async (req, res) => {
         const end   = moment().endOf("year").format("YYYY-MM-DD")
         const year = moment(start).format("YYYY")
 
-        const sj_count_raw = await SuratJalan.count({
-            where: { date: { [Op.between]: [start, end] } }
+        const last_sj = await SuratJalan.findOne({
+            where: {
+                date: {
+                    [Op.between]: [start, end]
+                }
+            },
+            order: [['createdAt', 'DESC']]
         })
-        const sj_count = String(sj_count_raw + 1).padStart(3, '0')
+        let sj_count = 1
+        if (last_sj) {
+            const last_no_sj = last_sj.no_surat_jalan
+            const last_count = parseInt(last_no_sj.split("/").pop())
+            if (!isNaN(last_count)) {
+                sj_count = last_count + 1
+            }
+        }
 
         const vt = await VT.findOne({ where: { vt_id } })
         const surat_jalan_id = `SJ-${Math.random().toString(36).substring(2, 19).toUpperCase()}`
@@ -90,9 +102,11 @@ router.post("/create", verifyToken, async (req, res) => {
         const qrString = JSON.stringify(qr)
         const qrImage = await QRCode.toDataURL(qrString)
 
+        const no_vt = vt.no_vt.replace(/\s/g, '')
+
         const new_surat_jalan = await SuratJalan.create({
             surat_jalan_id,
-            no_surat_jalan: `SJ-VT/${vt.no_vt}/${year}/${sj_count}`,
+            no_surat_jalan: `SJ-VT/${no_vt}/${year}/${sj_count}`,
             qr: qrImage,
             rute_id,
             supervisor_id,
