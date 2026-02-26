@@ -43,25 +43,25 @@ function drawTextAuto(page, font, text, { x, y, w }, size = 11) {
 }
 
 const fields = {
-    no_sj:        { x: 306, y: 676 },
-    date:         { x: 306, y: 662 },
-    rute:         { x: 306, y: 648 },
+    no_sj:        { x: 308, y: 676 },
+    date:         { x: 308, y: 662 },
+    rute:         { x: 308, y: 648 },
 
-    driver1:      { x: 306, y: 594.5 },
-    helper1:      { x: 306, y: 581 },
-    driver2:      { x: 306, y: 554 },
-    helper2:      { x: 306, y: 540.5 },
+    driver1:      { x: 308, y: 594.5 },
+    helper1:      { x: 308, y: 581 },
+    driver2:      { x: 308, y: 554 },
+    helper2:      { x: 308, y: 540.5 },
 
-    no_vt:        { x: 306, y: 526.5 },
-    plat:         { x: 306, y: 512.5 },
-    kapasitas:    { x: 306, y: 498.5 },
-    bbm:          { x: 306, y: 485 },
-    time_out:     { x: 306, y: 470.5 },
-    time_back:    { x: 306, y: 457 },
+    no_vt:        { x: 308, y: 526.5 },
+    plat:         { x: 308, y: 512.5 },
+    kapasitas:    { x: 308, y: 498.5 },
+    bbm:          { x: 308, y: 485 },
+    time_out:     { x: 308, y: 470.5 },
+    time_back:    { x: 308, y: 457 },
 
-    driver1_ttd:  { x: 82,  y: 273.5, w: 111 },
-    driver2_ttd:  { x: 188.5, y: 273.5, w: 111 },
-    dispatcher:   { x: 408, y: 273.5, w: 111 },
+    driver1_ttd:  { x: 84,  y: 273.5, w: 111 },
+    driver2_ttd:  { x: 190.5, y: 273.5, w: 111 },
+    dispatcher:   { x: 410, y: 273.5, w: 111 },
 
     qr:           { x: 90, y: 105 }
 }
