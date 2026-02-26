@@ -392,6 +392,57 @@ const getSuratJalanAll = async (where) => {
     })
 }
 
+router.post("/update", verifyToken, async (req, res) => {
+    try {
+        const { 
+            surat_jalan_id,
+            rute_id, supervisor_id, dispatcher_id, date, vt_id,
+            driver1, driver2, helper1, helper2,
+            bbm, time_out, time_back
+        } = req.body
+
+        const surat_jalan = await SuratJalan.findOne({ where: { surat_jalan_id } })
+
+        if (surat_jalan.trip_surat_jalan && surat_jalan.trip_surat_jalan.length > 0) {
+            return res.status(400).json({ message: "Surat Jalan memiliki trip terkait, tidak dapat diperbarui" })
+        }
+
+        if (!surat_jalan) {
+            return res.status(404).json({ message: "Surat Jalan tidak ditemukan" })
+        }
+
+        await surat_jalan.update({
+            rute_id, supervisor_id, dispatcher_id, date, vt_id,
+            bbm, time_out, time_back
+        })
+
+        const personel_surat_jalan = await PersonelSuratJalan.findAll({ where: { surat_jalan_id } })
+        for (const p of personel_surat_jalan) {
+            if (p.role === "driver1") {
+                p.personel_id = driver1
+            } else if (p.role === "driver2") {
+                p.personel_id = driver2
+            } else if (p.role === "helper1") {
+                p.personel_id = helper1
+            } else if (p.role === "helper2") {
+                p.personel_id = helper2
+            }
+            await p.save()
+        }
+
+        res.json({
+            success: true,
+            message: "Surat Jalan berhasil diperbarui"
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
+    }
+})
+
 router.post("/delete", verifyToken, async (req, res) => {
     try {
         const { surat_jalan_id } = req.body
