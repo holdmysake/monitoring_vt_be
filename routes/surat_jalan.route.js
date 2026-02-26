@@ -392,6 +392,31 @@ const getSuratJalanAll = async (where) => {
     })
 }
 
+router.post("/delete", verifyToken, async (req, res) => {
+    try {
+        const { surat_jalan_id } = req.body
+
+        const surat_jalan = await SuratJalan.findOne({ where: { surat_jalan_id } })
+
+        if (!surat_jalan) {
+            return res.status(404).json({ message: "Surat Jalan tidak ditemukan" })
+        }
+
+        await surat_jalan.destroy()
+
+        res.json({
+            success: true,
+            message: "Surat Jalan berhasil dihapus"
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
+    }
+})
+
 router.post("/get", verifyToken, async (req, res) => {
     try {
         const { surat_jalan_id } = req.body
