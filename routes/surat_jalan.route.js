@@ -170,7 +170,7 @@ router.post("/create", verifyToken, async (req, res) => {
                 ]
             })
 
-            const templatePath = path.join(__dirname, "../data/template_sj1.pdf")
+            const templatePath = path.join(__dirname, "../data/template_sj.pdf")
             const pdfBytes = fs.readFileSync(templatePath)
             const pdfDoc = await PDFDocument.load(pdfBytes)
 
