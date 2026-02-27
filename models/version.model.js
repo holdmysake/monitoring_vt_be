@@ -12,6 +12,11 @@ const Version = sequelize.define('version', {
         type: DataTypes.STRING(10),
         unique: true,
         allowNull: false
+    },
+
+    download_url: {
+        type: DataTypes.TEXT,
+        allowNull: true
     }
 }, {
     tableName: 'version',
