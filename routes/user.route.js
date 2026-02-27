@@ -4,10 +4,31 @@ import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import { Op } from "sequelize"
 import { verifyToken } from "../middlewares/user.middleware.js"
+import Version from "../models/version.model.js"
 
 const JWT_SECRET = process.env.JWT_SECRET
 
 const router = express.Router()
+
+router.post("/getVersion", async (req, res) => {
+    try {
+        const version = await Version.findOne({
+            order: [['id', 'DESC']]
+        })
+
+        res.json({
+            success: true,
+            message: "Berhasil mengambil data version",
+            version
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
+    }
+})
 
 router.post("/login", async (req, res) => {
     try {
