@@ -547,6 +547,29 @@ router.post("/getSJBySupervisor", verifyToken, async (req, res) => {
     }
 })
 
+router.post("/getSJByRute", verifyToken, async (req, res) => {
+    try {
+        const { rute_id, date } = req.body
+
+        const surat_jalans = await getSuratJalanAll({
+            rute_id,
+            date
+        })
+
+        res.json({
+            success: true,
+            message: "Surat Jalan berhasil diambil",
+            surat_jalans
+        })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
+    }
+})
+
 router.post("/getDatesWithRevisi", async (req, res) => {
     try {
         const { supervisor_id } = req.body
