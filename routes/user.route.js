@@ -183,7 +183,12 @@ router.post("/getByID", verifyToken, async (req, res) => {
         const { user_id } = req.body
 
         const user = await User.findOne({
-            where: { user_id }
+            where: { user_id },
+            include: {
+                model: Rute,
+                as: 'rute',
+                attributes: ['rute_id', 'nama_rute']
+            }
         })
 
         res.json({
@@ -203,7 +208,12 @@ router.post("/getByID", verifyToken, async (req, res) => {
 router.post("/getLast", verifyToken, async (req, res) => {
     try {
         const user = await User.findOne({
-            order: [['id', 'DESC']]
+            order: [['id', 'DESC']],
+            include: {
+                model: Rute,
+                as: 'rute',
+                attributes: ['rute_id', 'nama_rute']
+            }
         })
 
         res.json({
@@ -225,6 +235,11 @@ router.post("/getUser", verifyToken, async (req, res) => {
         const users = await User.findAll({
             where: {
                 role: 'user'
+            },
+            include: {
+                model: Rute,
+                as: 'rute',
+                attributes: ['rute_id', 'nama_rute']
             }
         })
 
@@ -271,6 +286,11 @@ router.post("/getSupervisor", verifyToken, async (req, res) => {
             where: {
                 role: 'user',
                 jabatan: 'supervisor'
+            },
+            include: {
+                model: Rute,
+                as: 'rute',
+                attributes: ['rute_id', 'nama_rute']
             }
         })
 
