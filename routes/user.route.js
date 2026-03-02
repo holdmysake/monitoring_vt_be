@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken"
 import { Op } from "sequelize"
 import { verifyToken } from "../middlewares/user.middleware.js"
 import Version from "../models/version.model.js"
+import Rute from "../models/rute.model.js"
 
 const JWT_SECRET = process.env.JWT_SECRET
 
