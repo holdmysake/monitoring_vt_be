@@ -1,6 +1,5 @@
 import { DataTypes } from "sequelize"
 import sequelize from "../db.js"
-import User from "./user.model.js"
 
 const Rute = sequelize.define('rute', {
     id: {
@@ -23,17 +22,6 @@ const Rute = sequelize.define('rute', {
     jarak: {
         type: DataTypes.FLOAT,
         allowNull: true
-    },
-
-    user_id: {
-        type: DataTypes.STRING(10),
-        allowNull: true,
-        references: {
-            model: User,
-            key: 'user_id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
     },
 
     tipe_rute: {
