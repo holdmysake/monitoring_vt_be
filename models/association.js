@@ -134,6 +134,12 @@ const defineAssociation = models => {
         targetKey: 'rute_id',
         as: 'rute'
     })
+
+    models.Rute.hasMany(models.User, {
+        foreignKey: 'rute_id',
+        sourceKey: 'rute_id',
+        as: 'users'
+    })
 }
 
 export default defineAssociation

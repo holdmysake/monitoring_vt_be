@@ -1,6 +1,7 @@
 import express from "express"
 import Rute from "../models/rute.model.js"
 import { verifyToken } from "../middlewares/user.middleware.js"
+import User from "../models/user.model.js"
 
 const router = express.Router()
 
@@ -133,7 +134,13 @@ router.post("/getLastRute", verifyToken, async (req, res) => {
 
 router.post("/get", verifyToken, async (req, res) => {
     try {
-        const rutes = await Rute.findAll()
+        const rutes = await Rute.findAll({
+            include: {
+                model: User,
+                as: 'users',
+                attributes: ['user_id', 'nama']
+            }
+        })
 
         res.json({
             success: true,
