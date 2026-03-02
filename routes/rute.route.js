@@ -7,13 +7,12 @@ const router = express.Router()
 
 router.post("/create", verifyToken, async (req, res) => {
     try {
-        const { nama_rute, jarak, user_id, tipe_rute, buffer } = req.body
+        const { nama_rute, jarak, tipe_rute, buffer } = req.body
 
         const new_rute = await Rute.create({
             rute_id: `RUTE-${Math.random().toString(36).substring(2, 7).toUpperCase()}`,
             nama_rute,
             jarak,
-            user_id,
             tipe_rute,
             buffer
         })
@@ -59,7 +58,7 @@ router.post("/delete", verifyToken, async (req, res) => {
 
 router.post("/update", verifyToken, async (req, res) => {
     try {
-        const { rute_id, nama_rute, jarak, user_id, tipe_rute, buffer } = req.body
+        const { rute_id, nama_rute, jarak, tipe_rute, buffer } = req.body
 
         const rute = await Rute.findOne({ where: { rute_id } })
 
@@ -69,7 +68,6 @@ router.post("/update", verifyToken, async (req, res) => {
 
         rute.nama_rute = nama_rute
         rute.jarak = jarak
-        rute.user_id = user_id
         rute.tipe_rute = tipe_rute
         rute.buffer = buffer
         await rute.save()
