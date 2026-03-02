@@ -128,6 +128,12 @@ const defineAssociation = models => {
         sourceKey: 'trip_id',
         as: 'revisi_trips'
     })
+
+    models.User.belongsTo(models.Rute, {
+        foreignKey: 'rute_id',
+        targetKey: 'rute_id',
+        as: 'rute'
+    })
 }
 
 export default defineAssociation

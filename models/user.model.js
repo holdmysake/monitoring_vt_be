@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize"
 import sequelize from "../db.js"
+import Rute from "./rute.model.js"
 
 const User = sequelize.define('user', {
     id: {
@@ -49,6 +50,17 @@ const User = sequelize.define('user', {
     jabatan: {
         type: DataTypes.ENUM('admin', 'dispatcher', 'superviso', 'operator'),
         allowNull: true
+    },
+
+    rute_id: {
+        type: DataTypes.STRING(10),
+        allowNull: true,
+        references: {
+            model: Rute,
+            key: 'rute_id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
     }
 }, {
     tableName: 'user',

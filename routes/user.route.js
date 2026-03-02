@@ -89,7 +89,7 @@ router.post("/login", async (req, res) => {
 
 router.post("/create", verifyToken, async(req, res) => {
     try {
-        const { username, nama, email, password, no_hp, role, jabatan } = req.body
+        const { username, nama, email, password, no_hp, role, jabatan, rute_id } = req.body
 
         if (!role) {
             role = "user"
@@ -105,7 +105,8 @@ router.post("/create", verifyToken, async(req, res) => {
             password: bcryptPassword,
             no_hp,
             role,
-            jabatan
+            jabatan,
+            rute_id
         })
 
         res.json({
@@ -124,7 +125,7 @@ router.post("/create", verifyToken, async(req, res) => {
 
 router.post("/update", verifyToken, async (req, res) => {
     try {
-        const { user_id, username, nama, email, password, no_hp, jabatan } = req.body
+        const { user_id, username, nama, email, password, no_hp, jabatan, rute_id } = req.body
 
         const user = await User.findOne({ where: { user_id } })
 
@@ -139,6 +140,7 @@ router.post("/update", verifyToken, async (req, res) => {
         user.password = bcryptPassword
         user.no_hp = no_hp
         user.jabatan = jabatan
+        user.rute_id = rute_id
         await user.save()
 
         res.json({
