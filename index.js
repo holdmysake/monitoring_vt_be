@@ -26,11 +26,13 @@ app.use(express.json())
 app.use(cors())
 app.use("/uploads", express.static(path.join(__dirname, "uploads")))
 
-app.use("/api/personel", personelRoute)
-app.use("/api/user", userRouter)
-app.use("/api/rute", ruteRouter)
-app.use("/api/suratjalan", suratjalanRouter)
-app.use("/api/vt", vtRouter)
+const version = "/api/v2"
+
+app.use(`${version}/personel`, personelRoute)
+app.use(`${version}/user`, userRouter)
+app.use(`${version}/rute`, ruteRouter)
+app.use(`${version}/suratjalan`, suratjalanRouter)
+app.use(`${version}/vt`, vtRouter)
 
 const startServer = async () => {
     try {
