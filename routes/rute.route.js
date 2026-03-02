@@ -1,7 +1,6 @@
 import express from "express"
 import Rute from "../models/rute.model.js"
 import { verifyToken } from "../middlewares/user.middleware.js"
-import User from "../models/user.model.js"
 
 const router = express.Router()
 
@@ -91,12 +90,7 @@ router.post("/getByID", verifyToken, async (req, res) => {
         const { rute_id } = req.body
 
         const rute = await Rute.findOne({
-            where: { rute_id },
-            include: [{
-                model: User,
-                as: 'supervisor',
-                attributes: ['user_id', 'nama']
-            }]
+            where: { rute_id }
         })
 
         if (!rute) {
@@ -139,13 +133,7 @@ router.post("/getLastRute", verifyToken, async (req, res) => {
 
 router.post("/get", verifyToken, async (req, res) => {
     try {
-        const rutes = await Rute.findAll({
-            include: [{
-                model: User,
-                as: 'supervisor',
-                attributes: ['user_id', 'nama']
-            }]
-        })
+        const rutes = await Rute.findAll()
 
         res.json({
             success: true,
