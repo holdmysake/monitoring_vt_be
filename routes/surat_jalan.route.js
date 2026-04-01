@@ -166,10 +166,13 @@ router.post("/create", verifyToken, async (req, res) => {
                     {
                         model: User,
                         as: "dispatcher",
-                        attributes: ["nama"]
+                        attributes: ["nama", "sign"]
                     }
                 ]
             })
+
+            const dispatcherSignPath = path.join(__dirname, sj.dispatcher.sign)
+
 
             const templatePath = path.join(__dirname, "../data/template_sj.pdf")
             const pdfBytes = fs.readFileSync(templatePath)
@@ -257,6 +260,22 @@ router.post("/create", verifyToken, async (req, res) => {
                 width: 120,
                 height: 120
             })
+
+            // Embed dispatcher sign
+            if (sj.dispatcher?.sign) {
+                const dispatcherSignBytes = fs.readFileSync(dispatcherSignPath)
+                const dispatcherSignImage = await pdfDoc.embedJpg(dispatcherSignBytes)
+                const signDims = dispatcherSignImage.scale(1)
+                const signWidth = 100
+                const signHeight = (signDims.height / signDims.width) * signWidth
+
+                page.drawImage(dispatcherSignImage, {
+                    x: fields.dispathcer_sign.x,
+                    y: fields.dispathcer_sign.y,
+                    width: signWidth,
+                    height: signHeight
+                })
+            }
 
             const out = await pdfDoc.save()
 
