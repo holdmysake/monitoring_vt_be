@@ -64,7 +64,7 @@ const fields = {
     dispatcher:      { x: 414, y: 273.5, w: 111 },
 
     qr:              { x: 90, y: 105 },
-    dispathcer_sign: { x: 400, y: 290 },
+    dispathcer_sign: { x: 430, y: 280 },
 }
 
 router.post("/create", verifyToken, async (req, res) => {
