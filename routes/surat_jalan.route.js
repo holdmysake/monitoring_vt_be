@@ -171,8 +171,7 @@ router.post("/create", verifyToken, async (req, res) => {
                 ]
             })
 
-            const dispatcherSignPath = path.join(__dirname, sj.dispatcher.sign)
-
+            const dispatcherSignPath = path.join(__dirname, "..", sj.dispatcher.sign)
 
             const templatePath = path.join(__dirname, "../data/template_sj.pdf")
             const pdfBytes = fs.readFileSync(templatePath)
