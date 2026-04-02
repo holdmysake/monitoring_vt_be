@@ -64,7 +64,7 @@ const fields = {
     dispatcher:      { x: 414, y: 273.5, w: 111 },
 
     qr:              { x: 90, y: 105 },
-    dispathcer_sign: { x: 420, y: 285 },
+    dispathcer_sign: { x: 430, y: 285 },
 }
 
 router.post("/create", verifyToken, async (req, res) => {
@@ -270,7 +270,7 @@ router.post("/create", verifyToken, async (req, res) => {
                     : await pdfDoc.embedJpg(dispatcherSignBytes)
 
                 const signDims = dispatcherSignImage.scale(1)
-                const signWidth = 100
+                const signWidth = 80
                 const signHeight = (signDims.height / signDims.width) * signWidth
 
                 page.drawImage(dispatcherSignImage, {
