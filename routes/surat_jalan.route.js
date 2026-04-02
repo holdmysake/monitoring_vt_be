@@ -262,8 +262,15 @@ router.post("/create", verifyToken, async (req, res) => {
 
             // Embed dispatcher sign
             if (sj.dispatcher?.sign) {
+                const dispatcherSignPath = path.join(__dirname, "..", sj.dispatcher.sign)
                 const dispatcherSignBytes = fs.readFileSync(dispatcherSignPath)
-                const dispatcherSignImage = await pdfDoc.embedJpg(dispatcherSignBytes)
+
+                // Check if the file is PNG or JPG
+                const isPng = dispatcherSignPath.endsWith(".png")
+                const dispatcherSignImage = isPng
+                    ? await pdfDoc.embedPng(dispatcherSignBytes)
+                    : await pdfDoc.embedJpg(dispatcherSignBytes)
+
                 const signDims = dispatcherSignImage.scale(1)
                 const signWidth = 100
                 const signHeight = (signDims.height / signDims.width) * signWidth
