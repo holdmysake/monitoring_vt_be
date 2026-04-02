@@ -64,7 +64,7 @@ const fields = {
     dispatcher:      { x: 414, y: 273.5, w: 111 },
 
     qr:              { x: 90, y: 105 },
-    dispathcer_sign: { x: 430, y: 280 },
+    dispathcer_sign: { x: 420, y: 285 },
 }
 
 router.post("/create", verifyToken, async (req, res) => {
@@ -170,8 +170,6 @@ router.post("/create", verifyToken, async (req, res) => {
                     }
                 ]
             })
-
-            const dispatcherSignPath = path.join(__dirname, "..", sj.dispatcher.sign)
 
             const templatePath = path.join(__dirname, "../data/template_sj.pdf")
             const pdfBytes = fs.readFileSync(templatePath)
