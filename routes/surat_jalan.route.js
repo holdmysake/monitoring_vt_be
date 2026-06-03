@@ -956,46 +956,91 @@ router.post("/downloadExcel", verifyToken, async (req, res) => {
         const workbook = new ExcelJS.Workbook()
         const worksheet = workbook.addWorksheet('Surat Jalan')
 
-        worksheet.columns = [
-            { header: 'No Surat Jalan', key: 'no_surat_jalan', width: 25 },
-            { header: 'Tanggal', key: 'date', width: 15 },
-            { header: 'Rute', key: 'rute', width: 25 },
-            { header: 'No VT', key: 'no_vt', width: 15 },
-            { header: 'Plat', key: 'plat', width: 15 },
-            { header: 'Kapasitas', key: 'kapasitas', width: 15 },
-            { header: 'BBM', key: 'bbm', width: 15 },
-            { header: 'Time Out', key: 'time_out', width: 20 },
-            { header: 'Time Back', key: 'time_back', width: 20 },
-            { header: 'Driver 1', key: 'driver1', width: 20 },
-            { header: 'Driver 2', key: 'driver2', width: 20 },
-            { header: 'Helper 1', key: 'helper1', width: 20 },
-            { header: 'Helper 2', key: 'helper2', width: 20 },
-            { header: 'Supervisor', key: 'supervisor', width: 20 }
+        const dateStr = dates.map(d => moment(d, "YYYY-MM-DD").format("DD-MM-YYYY")).join(', ')
+        worksheet.addRow([`TANGGAL: ${dateStr}`])
+        worksheet.addRow([])
+
+        const headers = [
+            'No Surat Jalan', 'Rute SJ', 'BBM', 'Time Out', 'Time Back', 
+            'Driver 1', 'Driver 2', 'Helper 1', 'Helper 2', 'Supervisor',
+            'Trip ID', 'Rute Trip', 'No Segel', 'Gross Load', 'Net Load', 'Gross Unload', 'Net Unload'
         ]
 
+        const groupedByVehicle = {}
         surat_jalans.forEach(sj => {
-            const driver1 = sj.personel_surat_jalan?.find(p => p.role === 'driver1')?.personel?.nama_personel || ''
-            const driver2 = sj.personel_surat_jalan?.find(p => p.role === 'driver2')?.personel?.nama_personel || ''
-            const helper1 = sj.personel_surat_jalan?.find(p => p.role === 'helper1')?.personel?.nama_personel || ''
-            const helper2 = sj.personel_surat_jalan?.find(p => p.role === 'helper2')?.personel?.nama_personel || ''
-
-            worksheet.addRow({
-                no_surat_jalan: sj.no_surat_jalan,
-                date: moment(sj.date).format('DD-MM-YYYY'),
-                rute: sj.rute?.nama_rute || '',
-                no_vt: sj.vt?.no_vt || '',
-                plat: sj.vt?.plat || '',
-                kapasitas: sj.vt?.kapasitas || 0,
-                bbm: sj.bbm || 0,
-                time_out: sj.time_out ? moment(sj.time_out).format('DD-MM-YYYY HH:mm') : '',
-                time_back: sj.time_back ? moment(sj.time_back).format('DD-MM-YYYY HH:mm') : '',
-                driver1,
-                driver2,
-                helper1,
-                helper2,
-                supervisor: sj.supervisor?.nama || ''
-            })
+            const vehicleKey = sj.vt ? `${sj.vt.no_vt} (${sj.vt.plat}) - Kapasitas: ${sj.vt.kapasitas}` : 'Tanpa Kendaraan'
+            if (!groupedByVehicle[vehicleKey]) {
+                groupedByVehicle[vehicleKey] = []
+            }
+            groupedByVehicle[vehicleKey].push(sj)
         })
+
+        for (const [vehicle, sjs] of Object.entries(groupedByVehicle)) {
+            worksheet.addRow([`KENDARAAN: ${vehicle}`])
+            worksheet.addRow(headers)
+
+            sjs.forEach(sj => {
+                const driver1 = sj.personel_surat_jalan?.find(p => p.role === 'driver1')?.personel?.nama_personel || ''
+                const driver2 = sj.personel_surat_jalan?.find(p => p.role === 'driver2')?.personel?.nama_personel || ''
+                const helper1 = sj.personel_surat_jalan?.find(p => p.role === 'helper1')?.personel?.nama_personel || ''
+                const helper2 = sj.personel_surat_jalan?.find(p => p.role === 'helper2')?.personel?.nama_personel || ''
+
+                const sjData = [
+                    sj.no_surat_jalan,
+                    sj.rute?.nama_rute || '',
+                    sj.bbm || 0,
+                    sj.time_out ? moment(sj.time_out).format('DD-MM-YYYY HH:mm') : '',
+                    sj.time_back ? moment(sj.time_back).format('DD-MM-YYYY HH:mm') : '',
+                    driver1,
+                    driver2,
+                    helper1,
+                    helper2,
+                    sj.supervisor?.nama || ''
+                ]
+
+                if (sj.trip_surat_jalan && sj.trip_surat_jalan.length > 0) {
+                    sj.trip_surat_jalan.forEach((trip, index) => {
+                        const rowPrefix = index === 0 ? sjData : Array(sjData.length).fill('')
+                        
+                        worksheet.addRow([
+                            ...rowPrefix,
+                            trip.trip_id,
+                            trip.rute?.nama_rute || '',
+                            trip.no_segel || '',
+                            trip.gross_loading || 0,
+                            trip.net_loading || 0,
+                            trip.gross_unloading || 0,
+                            trip.net_unloading || 0
+                        ])
+                    })
+                } else {
+                    worksheet.addRow([
+                        ...sjData,
+                        '', '', '', '', '', '', ''
+                    ])
+                }
+            })
+            
+            worksheet.addRow([])
+        }
+
+        worksheet.getColumn(1).width = 25 
+        worksheet.getColumn(2).width = 25 
+        worksheet.getColumn(3).width = 15 
+        worksheet.getColumn(4).width = 20 
+        worksheet.getColumn(5).width = 20 
+        worksheet.getColumn(6).width = 20 
+        worksheet.getColumn(7).width = 20 
+        worksheet.getColumn(8).width = 20 
+        worksheet.getColumn(9).width = 20 
+        worksheet.getColumn(10).width = 20 
+        worksheet.getColumn(11).width = 20 
+        worksheet.getColumn(12).width = 25 
+        worksheet.getColumn(13).width = 15 
+        worksheet.getColumn(14).width = 15 
+        worksheet.getColumn(15).width = 15 
+        worksheet.getColumn(16).width = 15 
+        worksheet.getColumn(17).width = 15 
 
         res.setHeader(
             'Content-Type',
