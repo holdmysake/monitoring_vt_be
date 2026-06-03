@@ -346,10 +346,16 @@ const getSuratJalanOne = async (where) => {
                     {
                         model: PersonelTrip,
                         as: 'personel_trip',
-                        include: {
-                            model: Personel,
-                            as: 'personel'
-                        }
+                        include: [
+                            {
+                                model: Personel,
+                                as: 'personel'
+                            },
+                            {
+                                model: User,
+                                as: 'user'
+                            }
+                        ]
                     },
                     {
                         model: Rute,
@@ -397,10 +403,16 @@ const getSuratJalanAll = async (where) => {
                     {
                         model: PersonelTrip,
                         as: 'personel_trip',
-                        include: {
-                            model: Personel,
-                            as: 'personel'
-                        }
+                        include: [
+                            {
+                                model: Personel,
+                                as: 'personel'
+                            },
+                            {
+                                model: User,
+                                as: 'user'
+                            }
+                        ]
                     },
                     {
                         model: Rute,
@@ -962,7 +974,8 @@ router.post("/downloadExcel", verifyToken, async (req, res) => {
         ]
         const tripHeaders = [
             '', 'Trip ID', 'Rute Trip', 'No Segel', 'Gross Load', 
-            'Net Load', 'Gross Unload', 'Net Unload'
+            'Net Load', 'Gross Unload', 'Net Unload',
+            'Driver Trip', 'Helper Trip', 'Op Loading', 'Op Unloading'
         ]
 
         const groupedByDate = {}
@@ -1010,6 +1023,11 @@ router.post("/downloadExcel", verifyToken, async (req, res) => {
                     if (sj.trip_surat_jalan && sj.trip_surat_jalan.length > 0) {
                         worksheet.addRow(tripHeaders)
                         sj.trip_surat_jalan.forEach((trip) => {
+                            const driverTrip = trip.personel_trip?.find(p => p.role === 'driver')?.personel?.nama_personel || ''
+                            const helperTrip = trip.personel_trip?.find(p => p.role === 'helper')?.personel?.nama_personel || ''
+                            const opLoading = trip.personel_trip?.find(p => p.role === 'op_loading')?.user?.nama || ''
+                            const opUnloading = trip.personel_trip?.find(p => p.role === 'op_unloading')?.user?.nama || ''
+
                             worksheet.addRow([
                                 '',
                                 trip.trip_id,
@@ -1018,7 +1036,11 @@ router.post("/downloadExcel", verifyToken, async (req, res) => {
                                 trip.gross_loading || 0,
                                 trip.net_loading || 0,
                                 trip.gross_unloading || 0,
-                                trip.net_unloading || 0
+                                trip.net_unloading || 0,
+                                driverTrip,
+                                helperTrip,
+                                opLoading,
+                                opUnloading
                             ])
                         })
                     }
@@ -1039,6 +1061,8 @@ router.post("/downloadExcel", verifyToken, async (req, res) => {
         worksheet.getColumn(8).width = 20 
         worksheet.getColumn(9).width = 20 
         worksheet.getColumn(10).width = 20 
+        worksheet.getColumn(11).width = 20 
+        worksheet.getColumn(12).width = 20 
 
         res.setHeader(
             'Content-Type',
