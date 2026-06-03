@@ -1,4 +1,5 @@
 import express from "express"
+import ExcelJS from "exceljs"
 import SuratJalan from "../models/surat_jalan.model.js"
 import PersonelSuratJalan from "../models/personel_surat_jalan.model.js"
 import TripSuratJalan from "../models/trip_surat_jalan.model.js"
@@ -922,6 +923,92 @@ router.post("/rejectRevisiTrip", verifyToken, async (req, res) => {
             success: true,
             message: "Revisi Trip berhasil ditolak dan dihapus"
         })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ 
+            success: false,
+            message: error.message
+        })
+    }
+})
+
+router.post("/downloadExcel", verifyToken, async (req, res) => {
+    try {
+        const { dates = [] } = req.body
+
+        if (!Array.isArray(dates) || dates.length === 0) {
+            return res.status(400).json({ message: "Tanggal tidak valid" })
+        }
+
+        const dateConditions = dates.map(d => ({
+            [Op.between]: [
+                moment(d, "YYYY-MM-DD").startOf("day").toDate(),
+                moment(d, "YYYY-MM-DD").endOf("day").toDate()
+            ]
+        }))
+
+        const surat_jalans = await getSuratJalanAll({
+            date: {
+                [Op.or]: dateConditions
+            }
+        })
+
+        const workbook = new ExcelJS.Workbook()
+        const worksheet = workbook.addWorksheet('Surat Jalan')
+
+        worksheet.columns = [
+            { header: 'No Surat Jalan', key: 'no_surat_jalan', width: 25 },
+            { header: 'Tanggal', key: 'date', width: 15 },
+            { header: 'Rute', key: 'rute', width: 25 },
+            { header: 'No VT', key: 'no_vt', width: 15 },
+            { header: 'Plat', key: 'plat', width: 15 },
+            { header: 'Kapasitas', key: 'kapasitas', width: 15 },
+            { header: 'BBM', key: 'bbm', width: 15 },
+            { header: 'Time Out', key: 'time_out', width: 20 },
+            { header: 'Time Back', key: 'time_back', width: 20 },
+            { header: 'Driver 1', key: 'driver1', width: 20 },
+            { header: 'Driver 2', key: 'driver2', width: 20 },
+            { header: 'Helper 1', key: 'helper1', width: 20 },
+            { header: 'Helper 2', key: 'helper2', width: 20 },
+            { header: 'Supervisor', key: 'supervisor', width: 20 }
+        ]
+
+        surat_jalans.forEach(sj => {
+            const driver1 = sj.personel_surat_jalan?.find(p => p.role === 'driver1')?.personel?.nama_personel || ''
+            const driver2 = sj.personel_surat_jalan?.find(p => p.role === 'driver2')?.personel?.nama_personel || ''
+            const helper1 = sj.personel_surat_jalan?.find(p => p.role === 'helper1')?.personel?.nama_personel || ''
+            const helper2 = sj.personel_surat_jalan?.find(p => p.role === 'helper2')?.personel?.nama_personel || ''
+
+            worksheet.addRow({
+                no_surat_jalan: sj.no_surat_jalan,
+                date: moment(sj.date).format('DD-MM-YYYY'),
+                rute: sj.rute?.nama_rute || '',
+                no_vt: sj.vt?.no_vt || '',
+                plat: sj.vt?.plat || '',
+                kapasitas: sj.vt?.kapasitas || 0,
+                bbm: sj.bbm || 0,
+                time_out: sj.time_out ? moment(sj.time_out).format('DD-MM-YYYY HH:mm') : '',
+                time_back: sj.time_back ? moment(sj.time_back).format('DD-MM-YYYY HH:mm') : '',
+                driver1,
+                driver2,
+                helper1,
+                helper2,
+                supervisor: sj.supervisor?.nama || ''
+            })
+        })
+
+        res.setHeader(
+            'Content-Type',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        res.setHeader(
+            'Content-Disposition',
+            'attachment; filename=Surat_Jalan.xlsx'
+        )
+
+        await workbook.xlsx.write(res)
+        res.end()
+
     } catch (error) {
         console.error(error)
         res.status(500).json({ 
