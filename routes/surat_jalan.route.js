@@ -956,10 +956,13 @@ router.post("/downloadExcel", verifyToken, async (req, res) => {
         const workbook = new ExcelJS.Workbook()
         const worksheet = workbook.addWorksheet('Surat Jalan')
 
-        const headers = [
+        const sjHeaders = [
             'No Surat Jalan', 'Rute SJ', 'BBM', 'Time Out', 'Time Back', 
-            'Driver 1', 'Driver 2', 'Helper 1', 'Helper 2', 'Supervisor',
-            'Trip ID', 'Rute Trip', 'No Segel', 'Gross Load', 'Net Load', 'Gross Unload', 'Net Unload'
+            'Driver 1', 'Driver 2', 'Helper 1', 'Helper 2', 'Supervisor'
+        ]
+        const tripHeaders = [
+            '', 'Trip ID', 'Rute Trip', 'No Segel', 'Gross Load', 
+            'Net Load', 'Gross Unload', 'Net Unload'
         ]
 
         const groupedByDate = {}
@@ -981,7 +984,7 @@ router.post("/downloadExcel", verifyToken, async (req, res) => {
 
             for (const [vehicle, sjs] of Object.entries(vehicles)) {
                 worksheet.addRow([`KENDARAAN: ${vehicle}`])
-                worksheet.addRow(headers)
+                worksheet.addRow(sjHeaders)
 
                 sjs.forEach(sj => {
                     const driver1 = sj.personel_surat_jalan?.find(p => p.role === 'driver1')?.personel?.nama_personel || ''
@@ -1002,12 +1005,13 @@ router.post("/downloadExcel", verifyToken, async (req, res) => {
                         sj.supervisor?.nama || ''
                     ]
 
+                    worksheet.addRow(sjData)
+
                     if (sj.trip_surat_jalan && sj.trip_surat_jalan.length > 0) {
-                        sj.trip_surat_jalan.forEach((trip, index) => {
-                            const rowPrefix = index === 0 ? sjData : Array(sjData.length).fill('')
-                            
+                        worksheet.addRow(tripHeaders)
+                        sj.trip_surat_jalan.forEach((trip) => {
                             worksheet.addRow([
-                                ...rowPrefix,
+                                '',
                                 trip.trip_id,
                                 trip.rute?.nama_rute || '',
                                 trip.no_segel || '',
@@ -1017,11 +1021,6 @@ router.post("/downloadExcel", verifyToken, async (req, res) => {
                                 trip.net_unloading || 0
                             ])
                         })
-                    } else {
-                        worksheet.addRow([
-                            ...sjData,
-                            '', '', '', '', '', '', ''
-                        ])
                     }
                 })
                 
@@ -1032,7 +1031,7 @@ router.post("/downloadExcel", verifyToken, async (req, res) => {
 
         worksheet.getColumn(1).width = 25 
         worksheet.getColumn(2).width = 25 
-        worksheet.getColumn(3).width = 15 
+        worksheet.getColumn(3).width = 25 
         worksheet.getColumn(4).width = 20 
         worksheet.getColumn(5).width = 20 
         worksheet.getColumn(6).width = 20 
@@ -1040,13 +1039,6 @@ router.post("/downloadExcel", verifyToken, async (req, res) => {
         worksheet.getColumn(8).width = 20 
         worksheet.getColumn(9).width = 20 
         worksheet.getColumn(10).width = 20 
-        worksheet.getColumn(11).width = 20 
-        worksheet.getColumn(12).width = 25 
-        worksheet.getColumn(13).width = 15 
-        worksheet.getColumn(14).width = 15 
-        worksheet.getColumn(15).width = 15 
-        worksheet.getColumn(16).width = 15 
-        worksheet.getColumn(17).width = 15 
 
         res.setHeader(
             'Content-Type',
