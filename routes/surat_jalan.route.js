@@ -956,71 +956,77 @@ router.post("/downloadExcel", verifyToken, async (req, res) => {
         const workbook = new ExcelJS.Workbook()
         const worksheet = workbook.addWorksheet('Surat Jalan')
 
-        const dateStr = dates.map(d => moment(d, "YYYY-MM-DD").format("DD-MM-YYYY")).join(', ')
-        worksheet.addRow([`TANGGAL: ${dateStr}`])
-        worksheet.addRow([])
-
         const headers = [
             'No Surat Jalan', 'Rute SJ', 'BBM', 'Time Out', 'Time Back', 
             'Driver 1', 'Driver 2', 'Helper 1', 'Helper 2', 'Supervisor',
             'Trip ID', 'Rute Trip', 'No Segel', 'Gross Load', 'Net Load', 'Gross Unload', 'Net Unload'
         ]
 
-        const groupedByVehicle = {}
+        const groupedByDate = {}
         surat_jalans.forEach(sj => {
-            const vehicleKey = sj.vt ? `${sj.vt.no_vt} (${sj.vt.plat}) - Kapasitas: ${sj.vt.kapasitas}` : 'Tanpa Kendaraan'
-            if (!groupedByVehicle[vehicleKey]) {
-                groupedByVehicle[vehicleKey] = []
+            const dateKey = moment(sj.date).format("DD-MM-YYYY")
+            if (!groupedByDate[dateKey]) {
+                groupedByDate[dateKey] = {}
             }
-            groupedByVehicle[vehicleKey].push(sj)
+            const vehicleKey = sj.vt ? `${sj.vt.no_vt} (${sj.vt.plat}) - Kapasitas: ${sj.vt.kapasitas}` : 'Tanpa Kendaraan'
+            if (!groupedByDate[dateKey][vehicleKey]) {
+                groupedByDate[dateKey][vehicleKey] = []
+            }
+            groupedByDate[dateKey][vehicleKey].push(sj)
         })
 
-        for (const [vehicle, sjs] of Object.entries(groupedByVehicle)) {
-            worksheet.addRow([`KENDARAAN: ${vehicle}`])
-            worksheet.addRow(headers)
+        for (const [date, vehicles] of Object.entries(groupedByDate)) {
+            worksheet.addRow([`TANGGAL: ${date}`])
+            worksheet.addRow([])
 
-            sjs.forEach(sj => {
-                const driver1 = sj.personel_surat_jalan?.find(p => p.role === 'driver1')?.personel?.nama_personel || ''
-                const driver2 = sj.personel_surat_jalan?.find(p => p.role === 'driver2')?.personel?.nama_personel || ''
-                const helper1 = sj.personel_surat_jalan?.find(p => p.role === 'helper1')?.personel?.nama_personel || ''
-                const helper2 = sj.personel_surat_jalan?.find(p => p.role === 'helper2')?.personel?.nama_personel || ''
+            for (const [vehicle, sjs] of Object.entries(vehicles)) {
+                worksheet.addRow([`KENDARAAN: ${vehicle}`])
+                worksheet.addRow(headers)
 
-                const sjData = [
-                    sj.no_surat_jalan,
-                    sj.rute?.nama_rute || '',
-                    sj.bbm || 0,
-                    sj.time_out ? moment(sj.time_out).format('DD-MM-YYYY HH:mm') : '',
-                    sj.time_back ? moment(sj.time_back).format('DD-MM-YYYY HH:mm') : '',
-                    driver1,
-                    driver2,
-                    helper1,
-                    helper2,
-                    sj.supervisor?.nama || ''
-                ]
+                sjs.forEach(sj => {
+                    const driver1 = sj.personel_surat_jalan?.find(p => p.role === 'driver1')?.personel?.nama_personel || ''
+                    const driver2 = sj.personel_surat_jalan?.find(p => p.role === 'driver2')?.personel?.nama_personel || ''
+                    const helper1 = sj.personel_surat_jalan?.find(p => p.role === 'helper1')?.personel?.nama_personel || ''
+                    const helper2 = sj.personel_surat_jalan?.find(p => p.role === 'helper2')?.personel?.nama_personel || ''
 
-                if (sj.trip_surat_jalan && sj.trip_surat_jalan.length > 0) {
-                    sj.trip_surat_jalan.forEach((trip, index) => {
-                        const rowPrefix = index === 0 ? sjData : Array(sjData.length).fill('')
-                        
+                    const sjData = [
+                        sj.no_surat_jalan,
+                        sj.rute?.nama_rute || '',
+                        sj.bbm || 0,
+                        sj.time_out ? moment(sj.time_out).format('DD-MM-YYYY HH:mm') : '',
+                        sj.time_back ? moment(sj.time_back).format('DD-MM-YYYY HH:mm') : '',
+                        driver1,
+                        driver2,
+                        helper1,
+                        helper2,
+                        sj.supervisor?.nama || ''
+                    ]
+
+                    if (sj.trip_surat_jalan && sj.trip_surat_jalan.length > 0) {
+                        sj.trip_surat_jalan.forEach((trip, index) => {
+                            const rowPrefix = index === 0 ? sjData : Array(sjData.length).fill('')
+                            
+                            worksheet.addRow([
+                                ...rowPrefix,
+                                trip.trip_id,
+                                trip.rute?.nama_rute || '',
+                                trip.no_segel || '',
+                                trip.gross_loading || 0,
+                                trip.net_loading || 0,
+                                trip.gross_unloading || 0,
+                                trip.net_unloading || 0
+                            ])
+                        })
+                    } else {
                         worksheet.addRow([
-                            ...rowPrefix,
-                            trip.trip_id,
-                            trip.rute?.nama_rute || '',
-                            trip.no_segel || '',
-                            trip.gross_loading || 0,
-                            trip.net_loading || 0,
-                            trip.gross_unloading || 0,
-                            trip.net_unloading || 0
+                            ...sjData,
+                            '', '', '', '', '', '', ''
                         ])
-                    })
-                } else {
-                    worksheet.addRow([
-                        ...sjData,
-                        '', '', '', '', '', '', ''
-                    ])
-                }
-            })
-            
+                    }
+                })
+                
+                worksheet.addRow([])
+            }
             worksheet.addRow([])
         }
 
