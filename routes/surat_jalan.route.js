@@ -968,6 +968,32 @@ router.post("/downloadExcel", verifyToken, async (req, res) => {
         const workbook = new ExcelJS.Workbook()
         const worksheet = workbook.addWorksheet('Surat Jalan')
 
+        worksheet.columns = [
+            { header: 'Tanggal', key: 'date', width: 15 },
+            { header: 'Kendaraan', key: 'kendaraan', width: 25 },
+            { header: 'No Surat Jalan', key: 'no_surat_jalan', width: 25 },
+            { header: 'Rute SJ', key: 'rute_sj', width: 25 },
+            { header: 'BBM', key: 'bbm', width: 15 },
+            { header: 'Time Out', key: 'time_out', width: 20 },
+            { header: 'Time Back', key: 'time_back', width: 20 },
+            { header: 'Driver 1', key: 'driver1', width: 20 },
+            { header: 'Driver 2', key: 'driver2', width: 20 },
+            { header: 'Helper 1', key: 'helper1', width: 20 },
+            { header: 'Helper 2', key: 'helper2', width: 20 },
+            { header: 'Supervisor', key: 'supervisor', width: 20 },
+            { header: 'Trip ID', key: 'trip_id', width: 20 },
+            { header: 'Rute Trip', key: 'rute_trip', width: 25 },
+            { header: 'No Segel', key: 'no_segel', width: 15 },
+            { header: 'Gross Load', key: 'gross_load', width: 15 },
+            { header: 'Net Load', key: 'net_load', width: 15 },
+            { header: 'Gross Unload', key: 'gross_unload', width: 15 },
+            { header: 'Net Unload', key: 'net_unload', width: 15 },
+            { header: 'Driver Trip', key: 'driver_trip', width: 20 },
+            { header: 'Helper Trip', key: 'helper_trip', width: 20 },
+            { header: 'Op Loading', key: 'op_loading', width: 20 },
+            { header: 'Op Unloading', key: 'op_unloading', width: 20 }
+        ]
+
         const groupedByDate = {}
         surat_jalans.forEach(sj => {
             const dateKey = moment(sj.date).format("DD-MM-YYYY")
@@ -977,49 +1003,32 @@ router.post("/downloadExcel", verifyToken, async (req, res) => {
             groupedByDate[dateKey][vehicleKey].push(sj)
         })
 
-        const sjHeaders = [
-            'Tanggal', 'Kendaraan', 'No Surat Jalan', 'Rute SJ', 'BBM', 'Time Out', 'Time Back', 
-            'Driver 1', 'Driver 2', 'Helper 1', 'Helper 2', 'Supervisor'
-        ]
-        const tripHeaders = [
-            '', '', 'Trip ID', 'Rute Trip', 'No Segel', 'Gross Load', 
-            'Net Load', 'Gross Unload', 'Net Unload',
-            'Driver Trip', 'Helper Trip', 'Op Loading', 'Op Unloading'
-        ]
-
-        worksheet.addRow(sjHeaders)
-
         for (const [date, vehicles] of Object.entries(groupedByDate)) {
-            let dateStr = date;
+            let datePrinted = false;
 
             for (const [vehicle, sjs] of Object.entries(vehicles)) {
-                let vehicleStr = vehicle;
+                let vehiclePrinted = false;
 
                 sjs.forEach(sj => {
+                    let sjPrinted = false;
+
                     const driver1 = sj.personel_surat_jalan?.find(p => p.role === 'driver1')?.personel?.nama_personel || ''
                     const driver2 = sj.personel_surat_jalan?.find(p => p.role === 'driver2')?.personel?.nama_personel || ''
                     const helper1 = sj.personel_surat_jalan?.find(p => p.role === 'helper1')?.personel?.nama_personel || ''
                     const helper2 = sj.personel_surat_jalan?.find(p => p.role === 'helper2')?.personel?.nama_personel || ''
 
-                    worksheet.addRow([
-                        dateStr,
-                        vehicleStr,
-                        sj.no_surat_jalan,
-                        sj.rute?.nama_rute || '',
-                        sj.bbm || 0,
-                        sj.time_out ? moment(sj.time_out).format('DD-MM-YYYY HH:mm') : '',
-                        sj.time_back ? moment(sj.time_back).format('DD-MM-YYYY HH:mm') : '',
+                    const baseSjData = {
+                        no_surat_jalan: sj.no_surat_jalan,
+                        rute_sj: sj.rute?.nama_rute || '',
+                        bbm: sj.bbm || 0,
+                        time_out: sj.time_out ? moment(sj.time_out).format('DD-MM-YYYY HH:mm') : '',
+                        time_back: sj.time_back ? moment(sj.time_back).format('DD-MM-YYYY HH:mm') : '',
                         driver1,
                         driver2,
                         helper1,
                         helper2,
-                        sj.supervisor?.nama || ''
-                    ])
-
-                    dateStr = '';
-                    vehicleStr = '';
-
-                    worksheet.addRow(tripHeaders)
+                        supervisor: sj.supervisor?.nama || ''
+                    }
 
                     if (sj.trip_surat_jalan && sj.trip_surat_jalan.length > 0) {
                         sj.trip_surat_jalan.forEach(trip => {
@@ -1028,42 +1037,55 @@ router.post("/downloadExcel", verifyToken, async (req, res) => {
                             const opLoading = trip.personel_trip?.find(p => p.role === 'op_loading')?.user?.nama || ''
                             const opUnloading = trip.personel_trip?.find(p => p.role === 'op_unloading')?.user?.nama || ''
 
-                            worksheet.addRow([
-                                '', '',
-                                trip.trip_id,
-                                trip.rute?.nama_rute || '',
-                                trip.no_segel || '',
-                                trip.gross_loading || 0,
-                                trip.net_loading || 0,
-                                trip.gross_unloading || 0,
-                                trip.net_unloading || 0,
-                                driverTrip,
-                                helperTrip,
-                                opLoading,
-                                opUnloading
-                            ])
+                            worksheet.addRow({
+                                date: !datePrinted ? date : '',
+                                kendaraan: !vehiclePrinted ? vehicle : '',
+                                ...( !sjPrinted ? baseSjData : {
+                                    no_surat_jalan: '', rute_sj: '', bbm: '', time_out: '', time_back: '',
+                                    driver1: '', driver2: '', helper1: '', helper2: '', supervisor: ''
+                                } ),
+                                trip_id: trip.trip_id,
+                                rute_trip: trip.rute?.nama_rute || '',
+                                no_segel: trip.no_segel || '',
+                                gross_load: trip.gross_loading || 0,
+                                net_load: trip.net_loading || 0,
+                                gross_unload: trip.gross_unloading || 0,
+                                net_unload: trip.net_unloading || 0,
+                                driver_trip: driverTrip,
+                                helper_trip: helperTrip,
+                                op_loading: opLoading,
+                                op_unloading: opUnloading
+                            })
+
+                            sjPrinted = true;
+                            datePrinted = true;
+                            vehiclePrinted = true;
                         })
                     } else {
-                        worksheet.addRow(['', '', '', '', '', '', '', '', '', '', '', '', ''])
+                        worksheet.addRow({
+                            date: !datePrinted ? date : '',
+                            kendaraan: !vehiclePrinted ? vehicle : '',
+                            ...baseSjData,
+                            trip_id: '',
+                            rute_trip: '',
+                            no_segel: '',
+                            gross_load: '',
+                            net_load: '',
+                            gross_unload: '',
+                            net_unload: '',
+                            driver_trip: '',
+                            helper_trip: '',
+                            op_loading: '',
+                            op_unloading: ''
+                        })
+
+                        sjPrinted = true;
+                        datePrinted = true;
+                        vehiclePrinted = true;
                     }
-                    worksheet.addRow([])
                 })
             }
         }
-
-        worksheet.getColumn(1).width = 15 
-        worksheet.getColumn(2).width = 25 
-        worksheet.getColumn(3).width = 25 
-        worksheet.getColumn(4).width = 25 
-        worksheet.getColumn(5).width = 15 
-        worksheet.getColumn(6).width = 20 
-        worksheet.getColumn(7).width = 20 
-        worksheet.getColumn(8).width = 20 
-        worksheet.getColumn(9).width = 20 
-        worksheet.getColumn(10).width = 20 
-        worksheet.getColumn(11).width = 20 
-        worksheet.getColumn(12).width = 20 
-        worksheet.getColumn(13).width = 20 
 
         res.setHeader(
             'Content-Type',
